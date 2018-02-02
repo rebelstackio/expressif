@@ -1,0 +1,4 @@
+{
+    "name": "reqvalidator",
+    "main": "./reqvalidator.js"
+}
