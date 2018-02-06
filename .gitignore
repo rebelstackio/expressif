@@ -24,6 +24,8 @@ node_modules
 .vagrant
 vagrant/tmp
 vagrant/files/ssh
+# ignore vagrant entirely
+vagrant
 
 # don't include .env!!!!
 .env
