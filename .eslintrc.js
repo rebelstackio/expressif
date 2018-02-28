@@ -1,15 +1,22 @@
 module.exports = {
-    "extends": "standard",
-    "parserOptions": {
+    extends: require.resolve('eslint-config-airbnb-base'),
+    parserOptions: {
         "ecmaVersion": 6,
     },
-    "env": {
+    env: {
         "node": true
     },
-    "rules": {
-        "semi": ["error", "always"],
-        "indent": ["error", 4],
-        "standard/object-curly-even-spacing": false,
-        "no-multi-spaces": 0
+    rules: {
+        'indent': ['error', 'tab'],
+        'prefer-destructuring':0,
+        'import/no-unresolved':0,
+        'import/no-extraneous-dependencies':0,
+        'comma-dangle':0,
+        'no-underscore-dangle':0,
+        'no-bitwise':0,
+        'no-multi-assign':0,
+        'no-restricted-syntax':0,
+        'guard-for-in':0,
+        'no-tabs': 0
     },
 };
