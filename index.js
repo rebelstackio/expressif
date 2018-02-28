@@ -16,15 +16,10 @@ const router = require('./lib/router');
  * @param {Object} options Pass a custom logger.
  * @returns {Object} Instance of Auth handler.
  */
-const returnAuthInstance = function returnAuthInstance (secret, options) {
-    return new Auth(secret, options);
+const returnAuthInstance = function returnAuthInstance(secret, options) {
+	return new Auth(secret, options);
 };
 
 module.exports = {
-    auth: returnAuthInstance,
-    error: error,
-    jsonvalidator: jsonvalidator,
-    reqvalidator: reqvalidator,
-    respond: respond,
-    router: router
+	auth: returnAuthInstance, error, jsonvalidator, reqvalidator, respond, router
 };
