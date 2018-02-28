@@ -7,7 +7,10 @@ module.exports = {
         "node": true
     },
     rules: {
-        'indent': ['error', 'tab'],
+        "semi": ["error", "always"],
+        "standard/object-curly-even-spacing": false,
+        "no-multi-spaces": 0,
+        'indent': ['error', 'tab', { "SwitchCase": 1 }],
         'prefer-destructuring':0,
         'import/no-unresolved':0,
         'import/no-extraneous-dependencies':0,
@@ -17,6 +20,10 @@ module.exports = {
         'no-multi-assign':0,
         'no-restricted-syntax':0,
         'guard-for-in':0,
-        'no-tabs': 0
-    },
+        'no-tabs': 0,
+        'no-restricted-properties':0,
+        'guard-for-in':0,
+        'no-tabs': 0,
+        'no-eval': 0
+    }
 };
