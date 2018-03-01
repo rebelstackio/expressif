@@ -2,7 +2,7 @@ const Auth = require('./lib/auth');
 
 const error = require('./lib/error');
 
-const jsonvalidator = require('./lib/jsonvalidator');
+const JSONValidator = require('./lib/jsonvalidator');
 
 const reqvalidator = require('./lib/reqvalidator');
 
@@ -21,5 +21,5 @@ const returnAuthInstance = function returnAuthInstance(secret, options) {
 };
 
 module.exports = {
-	auth: returnAuthInstance, error, jsonvalidator, reqvalidator, respond, router
+	Auth, error, JSONValidator, returnAuthInstance, respond, reqvalidator, router
 };
