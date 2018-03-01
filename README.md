@@ -58,54 +58,49 @@ const authRouter = Router.buildRouter(arouterdata);
 ```
 
 Okay, but so far this is just a wrapper for the `Express#Router`. It gives us a nice clean format for router definitions, easy to read and reason about. Now let's add more support for the [request flow](#at-your-express-service) outlined above.
-### Auth
-ayEs provides an implementation of authentication by [JWT](https://jwt.io/) through the `Auth` lib. If and endpoint or a set of endpoints grouped into a router instance requires authentication, create and instance of the Auth handler and pass it to the router configuration on the `options.auth` property.
+
+## Auth
+ayEs provides an implementation of authentication by [JWT](https://jwt.io/) through the `Auth` lib. If an endpoint or a set of endpoints grouped into a router instance requires authentication, create and instance of the `ayEs#Auth` handler and pass it to the route configuration.
 ```js
 const ayEs = require('ayes');
-const Auth = ayes.auth;
+const Auth = ayes.Auth;
 const auth = new Auth(process.env.JWT_SECRET);
 // Or use the factory function
 const auth = ayEs.returnAuthInstance(process.env.JWT_SECRET);
-const routerOptions = {
-    auth: auth, //Pass the auth instance here to authenticate all routes by JWT.
-    routes: [
-        {
-            method: 'post',
-            path: '/me',
-            mwares: getMe //My controller function
-        }, ...
-    ]
-}
-```
-For endpoint level authentication you must pass the `auth` instance to the indvidual route configuration
-```js
 const routerOptions = {
     routes: [
         {
             auth: auth, //Pass the auth instance here to authenticate just the /me endpoint.
             method: 'post',
             path: '/me',
-            mwares: getMe //My controller function
+            mwares: getMe //A controller function
+        }, ...
+    ]
+}
+```
+If all routes for a particular router require authentication, simply pass the auth instance on the `options.auth` property of the router configuration instead.
+```js
+const routerOptions = {
+    auth: auth, //Pass the auth instance here to authenticate all routes by JWT.
+    routes: [
+        {
+            method: 'post',
+            path: '/me',
+            mwares: getMe //A controller function
+        }, 
+        {
+            method: 'put',
+            path: '/some/other/authenticated/route',
+            mwares: anotherController
         }
     ]
 }
 ```
+
 Request to endpoints configured with the `ayEs#Auth` lib must send in an `Authorization: Bearer <jwt>` header with a valid JWT to access the service.
 
-#### new ayEs#Auth(String jwtsecret, Object options)  -> Object ayEs#auth
+The lib adds an express middleware function to the route that will handle JWT validation for authentication. This middleware decodes the JWT present in the request's `Authorization` header, returning errors on failed validation. If the JWT is present and valid, the JWT payload is added to the express request object as the `dtoken` property, so you can access it inside any subsequent middleware.
 
-#### Auth#decodeJWT(String jwt, String jwtsecret) -> Object
-Decodes the given `jwt` string and returns the jwt payload as an object. Throws an error if `jwt` is not valid.
-
-### Auth#decodeErr(Object) -> Object ayEs#Error
-Helper function that take the error object returned by `Auth#decodeJWT` and parses it to a custom [`ayEs#Error`](#error) type with relevant error code.
-#### Auth#encodeJWT(Object payload, String jwtsecret) -> String
-Returns a JWT string with `payload` as its payload and signed with the given secret key `jwtsecret`.
-
-#### ayEs#returnAuthInstance(String jwtsecret, Object options) -> Object ayEs#auth
-Returns an `ayEs#Auth` instances that can be used in the creation of service endpoints to handle endpoint authorization by JWT.
-#### ayEs#auth#generateAuthMiddleWare() -> Function<Object, Object, Function>
-Returns an express middleware function that will handle JWT validation for authentication. This middleware decodes the JWT present in the requests `Authorization` header, returning errors on failed validation. If the JWT is present and valid, the JWT payload is added to the express request object as the `dtoken` property.
 ```js
 /**
  * With a JWT payload of 
@@ -113,14 +108,48 @@ Returns an express middleware function that will handle JWT validation for authe
  *    "exp": "2018-03-01T04:49:49.781Z",
  *     "user": {
  *         "id": "596dcd99dd19f9227f5a94b1",
- *         "username": "nectarsoft",
- *         "email": "russell@kano.me"
+ *         "username": "nectarsoft"
  *     }
  * }
 */
 function (req, res) {
     const username = req.dtoken.user.username;
     console.log(username) // nectarsoft
+}
+```
+
+### API
+#### new ayEs#Auth(String jwtsecret, Object options)  -> Object ayEs#auth
+Create `ayEs#Auth` instance.
+
+__Options__
+
+* _logger_: A custom logger for the instance to use.
+
+#### Auth#decodeJWT(String jwt, String jwtsecret) -> Object
+Decodes the given `jwt` string and returns the jwt payload as an object. Throws an error if `jwt` is not valid.
+
+#### Auth#decodeErr(Object) -> Object ayEs#Error
+Helper function that take the error object returned by `Auth#decodeJWT` and parses it to a custom [`ayEs#Error#AuthError`](#error) type with relevant error code and message.
+
+#### Auth#encodeJWT(Object payload, String jwtsecret) -> String
+Returns a JWT string with `payload`, signed with the given secret key `jwtsecret`.
+
+#### ayEs#returnAuthInstance(String jwtsecret, Object options) -> Object ayEs#auth
+Helper factory function that returns an `ayEs#Auth` instances.
+
+#### ayEs#auth#generateAuthMiddleWare() -> Function<Object, Object, Function>
+Returns the auth middleware function. 
+
+This is exposed so that you can add additional authentication middleware if required.
+
+```js
+const authMiddleware = [];
+authMiddleware.push(auth.generateAuthMiddleWare());
+authMiddleware.push(someOtherAuthFunction);
+const routerOptions = {
+    auth: auth, // auth property can be an array of functions.
+    routes: [ ... ]
 }
 ```
 
