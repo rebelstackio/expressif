@@ -51,7 +51,7 @@ const arouterdata = {
 	]
 };
 /**
- * Call the Router#buidRouter function returns an express router with routes 
+ * Call the Router#buildRouter function returns an express router with routes 
  * for each configuration in the routes array.
 */
 const authRouter = Router.buildRouter(arouterdata);
@@ -118,11 +118,11 @@ function (req, res) {
 }
 ```
 
-### API
+### Auth API
 #### new ayEs#Auth(String jwtsecret, Object options)  -> Object ayEs#auth
 Create `ayEs#Auth` instance.
 
-__Options__
+__options__
 
 * _logger_: A custom logger for the instance to use.
 
@@ -130,7 +130,7 @@ __Options__
 Decodes the given `jwt` string and returns the jwt payload as an object. Throws an error if `jwt` is not valid.
 
 #### Auth#decodeErr(Object) -> Object ayEs#Error
-Helper function that take the error object returned by `Auth#decodeJWT` and parses it to a custom [`ayEs#Error#AuthError`](#error) type with relevant error code and message.
+Helper function that take the error object returned by `Auth#decodeJWT` and parses it to a custom [`ayEs#Error#AuthError`](#new-errorautherrorstring-message-string-code---object) type with relevant error code and message.
 
 #### Auth#encodeJWT(Object payload, String jwtsecret) -> String
 Returns a JWT string with `payload`, signed with the given secret key `jwtsecret`.
@@ -153,24 +153,135 @@ const routerOptions = {
 }
 ```
 
-### Error
-A set of custom error objects for use in controller middleware to standadize error responses.
-* Error#BadRequestError 
-* Error#NotFoundError
-* Error#BadHeaderError
-* Error#AuthError
-* Error#ForbiddenError
-* Error#UnauthorizedError
-* Error#UnavailableRetryError
-* Error#ConflictError
-* Error#DataBaseReturnError
-* Error#JSONValidationError
-* Error#DataBaseError
-* Error#ServerError
-* Error#FBError
-* Error#AWSError
+## Error
+A set of custom error objects for use in controller middleware to standardise error responses.
 
-#### Error#codes
+All `Error` constructors accept a code parameter that can be used to pass in a code string as a non-verbose mechanism to give more specific detail about an error (see [error codes](#errorcodes)).
+
+ayEs error objects are intended for use along side the [response](#response) library to form a standard error response to api request.
+
+### Error API
+
+#### new Error#BadRequestError(String message, String code) -> Object
+Returns an `BadRequestError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 400;
+```
+
+#### new Error#NotFoundError(String message, String code) -> Object
+Returns an `NotFoundError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 404;
+```
+#### new Error#BadHeaderError(String message, String code) -> Object
+Returns an `BadHeaderError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 400;
+```
+#### new Error#AuthError(String message, String code) -> Object
+Returns an `AuthError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 401;
+```
+
+This is intended for authentication errors, not authorisation errors (see [Error#ForbiddenError](#new-errorforbiddenerrorstring-message-string-code---object))
+
+#### new Error#ForbiddenError(String message, String code) -> Object
+Returns an `ForbiddenError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 403;
+```
+
+#### new Error#UnauthorizedError(String message, String code) -> Object
+Returns an `UnauthorizedError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 401;
+```
+This is intended for authentication errors, not authorisation errors (see [Error#ForbiddenError](#new-errorforbiddenerrorstring-message-string-code---object))
+
+#### new Error#UnavailableRetryError(String message, String code, String retryafter) -> Object
+Returns an `UnavailableRetryError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 503;
+    error.retryafter = retryafter;
+```
+This error includes a `retryafter` property to indicate a wait period until retrying to access the service. Can be used for temporary unavailability, such as cache updates. 
+
+#### new Error#ConflictError(String message, String code) -> Object
+Returns an `ConflictError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 409;
+```
+#### new Error#DataBaseReturnError(String message, String code) -> Object
+Returns an `DataBaseReturnError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 500;
+```
+#### new Error#JSONValidationError(String message, Object errorData, String code) -> Object
+Returns an `JSONValidationError` instance with properties 
+```js
+    error.message = message;
+    error.code = code;
+    error.httpstatus = 400;
+    error.info = errorData;
+```
+This error is used by the [`JSONValidator](#jsonvalidator) lib to return errors on validation. The validation error data is passed in the `info` property.
+
+### Server Errors
+There are a set of errors that wrap server errors and are passed the original error as a parameter to the constructor. This error object is then available on the `errObj` property.
+
+#### new Error#DataBaseError(Object errobj, String message, String code) -> Object
+Returns an `DataBaseError` instance with properties 
+```js
+    error.message = message;
+    error.errObj = errobj;
+    error.code = code;
+    error.httpstatus = 500;
+```
+#### new Error#ServerError(Object errobj, String message, String code) -> Object
+Returns an `ServerError` instance with properties 
+```js
+    error.message = message;
+    error.errObj = errobj;
+    error.code = code;
+    error.httpstatus = 500;
+```
+#### new Error#FBError(Object errobj, String message, String code) -> Object
+Returns an `FBError` instance with properties 
+```js
+    error.message = message;
+    error.errObj = errobj;
+    error.code = code;
+    error.httpstatus = 500;
+```
+#### new Error#AWSError(Object errobj, String message, String code) -> Object
+Returns an `AWSError` instance with properties 
+```js
+    error.message = message;
+    error.errObj = errobj;
+    error.code = code;
+    error.httpstatus = 500;
+```
+
+### Error#codes
 
 ### JSONValidator
 A wrapper for the [AJV](https://github.com/epoberezkin/ajv) JSON schema validation library used to validate request parameters.
@@ -228,7 +339,7 @@ Now, this instance can be assigned to the [`Router#options#jsonv`](#options) pro
 	]
 }
 ```
-The router library will now add a validation middleware for request paramaters usign the schema indicated, Any failure against the schema is wrapped in a [`Error#JSONValidationError`](#errors) and reported back to the client using [`Respond#invalidRequest`](#invalidRequest).
+The router library will now add a validation middleware for request paramaters usign the schema indicated, Any failure against the schema is wrapped in a [`Error#JSONValidationError`](#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object) and reported back to the client using [`Respond#invalidRequest`](#invalidRequest).
 
 ### Respond
 A wrapper lib for the [`Express#res.send`](https://expressjs.com/en/4x/api.html#res.send) function. All responses are standardised.
