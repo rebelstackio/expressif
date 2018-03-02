@@ -28,27 +28,27 @@ const Router = ayEs.router;
  * PLEASE NOTE: This is not a recommended login strategy for production sites.
 */
 const loginController = function loginController(req, res) {
-	const { username, password } = req.body;
-	if (password) {
-		const response = {
-			id: Math.floor(Math.random() * 6) + 1,
-			username
-		};
-		res.status(200).send(response);
-	}
+  const { username, password } = req.body;
+  if (password) {
+    const response = {
+      id: Math.floor(Math.random() * 6) + 1,
+      username
+    };
+    res.status(200).send(response);
+  }
 };
 /**
  * The buildRouter helper function takes a configuration object with an 
  * array of route definitions.
 */
 const arouterdata = {
-	routes: [
-		{
-			method: 'post',
-			path: '/login',
-			mwares: loginController
-		}
-	]
+  routes: [
+    {
+      method: 'post',
+      path: '/login',
+      mwares: loginController
+    }
+  ]
 };
 /**
  * Call the Router#buildRouter function returns an express router with routes 
@@ -68,32 +68,32 @@ const auth = new Auth(process.env.JWT_SECRET);
 // Or use the factory function
 const auth = ayEs.returnAuthInstance(process.env.JWT_SECRET);
 const routerOptions = {
-    routes: [
-        {
-            auth: auth, //Pass the auth instance here to authenticate just the /me endpoint.
-            method: 'post',
-            path: '/me',
-            mwares: getMe //A controller function
-        }, ...
-    ]
+  routes: [
+    {
+      auth: auth, //Pass the auth instance here to authenticate just the /me endpoint.
+      method: 'post',
+      path: '/me',
+      mwares: getMe //A controller function
+    }, ...
+  ]
 }
 ```
 If all routes for a particular router require authentication, simply pass the auth instance on the `options.auth` property of the router configuration instead.
 ```js
 const routerOptions = {
-    auth: auth, //Pass the auth instance here to authenticate all routes by JWT.
-    routes: [
-        {
-            method: 'post',
-            path: '/me',
-            mwares: getMe //A controller function
-        }, 
-        {
-            method: 'put',
-            path: '/some/other/authenticated/route',
-            mwares: anotherController
-        }
-    ]
+  auth: auth, //Pass the auth instance here to authenticate all routes by JWT.
+  routes: [
+    {
+      method: 'post',
+      path: '/me',
+      mwares: getMe //A controller function
+    }, 
+    {
+      method: 'put',
+      path: '/some/other/authenticated/route',
+      mwares: anotherController
+    }
+  ]
 }
 ```
 
@@ -106,15 +106,15 @@ The lib adds an express middleware function to the route that will handle JWT va
  * With a JWT payload of 
  * {
  *    "exp": "2018-03-01T04:49:49.781Z",
- *     "user": {
- *         "id": "596dcd99dd19f9227f5a94b1",
- *         "username": "nectarsoft"
- *     }
+ *    "user": {
+ *      "id": "596dcd99dd19f9227f5a94b1",
+ *      "username": "nectarsoft"
+ *    }
  * }
 */
 function (req, res) {
-    const username = req.dtoken.user.username;
-    console.log(username) // nectarsoft
+  const username = req.dtoken.user.username;
+  console.log(username) // nectarsoft
 }
 ```
 
@@ -148,8 +148,8 @@ const authMiddleware = [];
 authMiddleware.push(auth.generateAuthMiddleWare());
 authMiddleware.push(someOtherAuthFunction);
 const routerOptions = {
-    auth: auth, // auth property can be an array of functions.
-    routes: [ ... ]
+  auth: auth, // auth property can be an array of functions.
+  routes: [ ... ]
 }
 ```
 
@@ -165,31 +165,31 @@ ayEs error objects are intended for use along side the [response](#response) lib
 #### new Error#BadRequestError(String message, String code) -> Object
 Returns an `BadRequestError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 400;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 400;
 ```
 
 #### new Error#NotFoundError(String message, String code) -> Object
 Returns an `NotFoundError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 404;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 404;
 ```
 #### new Error#BadHeaderError(String message, String code) -> Object
 Returns an `BadHeaderError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 400;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 400;
 ```
 #### new Error#AuthError(String message, String code) -> Object
 Returns an `AuthError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 401;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 401;
 ```
 
 This is intended for authentication errors, not authorisation errors (see [Error#ForbiddenError](#new-errorforbiddenerrorstring-message-string-code---object))
@@ -197,53 +197,53 @@ This is intended for authentication errors, not authorisation errors (see [Error
 #### new Error#ForbiddenError(String message, String code) -> Object
 Returns an `ForbiddenError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 403;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 403;
 ```
 
 #### new Error#UnauthorizedError(String message, String code) -> Object
 Returns an `UnauthorizedError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 401;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 401;
 ```
 This is intended for authentication errors, not authorisation errors (see [Error#ForbiddenError](#new-errorforbiddenerrorstring-message-string-code---object))
 
 #### new Error#UnavailableRetryError(String message, String code, String retryafter) -> Object
 Returns an `UnavailableRetryError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 503;
-    error.retryafter = retryafter;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 503;
+  error.retryafter = retryafter;
 ```
 This error includes a `retryafter` property to indicate a wait period until retrying to access the service. Can be used for temporary unavailability, such as cache updates. 
 
 #### new Error#ConflictError(String message, String code) -> Object
 Returns an `ConflictError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 409;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 409;
 ```
 #### new Error#DataBaseReturnError(String message, String code) -> Object
 Returns an `DataBaseReturnError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 500;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 500;
 ```
 #### new Error#JSONValidationError(String message, Object errorData, String code) -> Object
 Returns an `JSONValidationError` instance with properties 
 ```js
-    error.message = message;
-    error.code = code;
-    error.httpstatus = 400;
-    error.info = errorData;
+  error.message = message;
+  error.code = code;
+  error.httpstatus = 400;
+  error.info = errorData;
 ```
-This error is used by the [`JSONValidator](#jsonvalidator) lib to return errors on validation. The validation error data is passed in the `info` property.
+This error is used by the [`JSONValidator`](#jsonvalidator) lib to return errors on validation. The validation error data is passed in the `info` property.
 
 ### Server Errors
 There are a set of errors that wrap server errors and are passed the original error as a parameter to the constructor. This error object is then available on the `errObj` property.
@@ -251,34 +251,34 @@ There are a set of errors that wrap server errors and are passed the original er
 #### new Error#DataBaseError(Object errobj, String message, String code) -> Object
 Returns an `DataBaseError` instance with properties 
 ```js
-    error.message = message;
-    error.errObj = errobj;
-    error.code = code;
-    error.httpstatus = 500;
+  error.message = message;
+  error.errObj = errobj;
+  error.code = code;
+  error.httpstatus = 500;
 ```
 #### new Error#ServerError(Object errobj, String message, String code) -> Object
 Returns an `ServerError` instance with properties 
 ```js
-    error.message = message;
-    error.errObj = errobj;
-    error.code = code;
-    error.httpstatus = 500;
+  error.message = message;
+  error.errObj = errobj;
+  error.code = code;
+  error.httpstatus = 500;
 ```
 #### new Error#FBError(Object errobj, String message, String code) -> Object
 Returns an `FBError` instance with properties 
 ```js
-    error.message = message;
-    error.errObj = errobj;
-    error.code = code;
-    error.httpstatus = 500;
+  error.message = message;
+  error.errObj = errobj;
+  error.code = code;
+  error.httpstatus = 500;
 ```
 #### new Error#AWSError(Object errobj, String message, String code) -> Object
 Returns an `AWSError` instance with properties 
 ```js
-    error.message = message;
-    error.errObj = errobj;
-    error.code = code;
-    error.httpstatus = 500;
+  error.message = message;
+  error.errObj = errobj;
+  error.code = code;
+  error.httpstatus = 500;
 ```
 
 ### Error#codes
@@ -301,28 +301,28 @@ A wrapper for the [AJV](https://github.com/epoberezkin/ajv) JSON schema validati
 The idea here is to create an instance of the `ayEs#JSONValidator` and register a set of JSON schema that can be used in route configuration. So, given a JSON schema for validating login parameters with an `$id` property of `postloginin`, such as 
 ```js 
 const authReqSchema = {
-	$schema: 'http://json-schema.org/draft-07/schema#',
-	$id: 'postloginin',
-	title: 'Login Object',
-	type: 'object',
-	properties: {
-		email: {
-			title: 'user email',
-			type: 'string',
-			format: 'email'
-		},
-		username: {
-			title: 'username',
-			type: 'string'
-		},
-		password: {
-			title: 'user password',
-			type: 'string',
-			minLength: 5,
-			maxLength: 400
-		}
-	},
-	required: ['username', 'password']
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  $id: 'postloginin',
+  title: 'Login Object',
+  type: 'object',
+  properties: {
+    email: {
+      title: 'user email',
+      type: 'string',
+      format: 'email'
+    },
+    username: {
+      title: 'username',
+      type: 'string'
+    },
+    password: {
+      title: 'user password',
+        type: 'string',
+        minLength: 5,
+        maxLength: 400
+      }
+    },
+    required: ['username', 'password']
 };
 ```
 we can instantiate the validator either by passing the schema to the constructor
@@ -340,15 +340,15 @@ jv.addSchema(authReqSchema);
 Now, this instance can be assigned to the [`Router#options#jsonv`](#options) property and the registered schema can be referenced in a route configuration as `validreq: 'postloginin'`
 ```js
 {
-	jsonv: jv,
-	routes: [
-		{
-			method: 'post',
-			path: '/login',
-			mwares: loginController,
-			validreq: 'postloginin' // Reference the schema here
-		}
-	]
+  jsonv: jv,
+  routes: [
+    {
+      method: 'post',
+      path: '/login',
+      mwares: loginController,
+      validreq: 'postloginin' // Reference the schema here
+    }
+  ]
 }
 ```
 The router library will now add a validation middleware for request parameters using the schema indicated. Any failure against the schema is wrapped in a [`Error#JSONValidationError`](#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object) and reported back to the client using [`Respond#invalidRequest`](#invalidRequest).
@@ -360,25 +360,25 @@ First add all the definition schemas into the array of schemas you wish to regis
 ```js
 // schemas/defs.json
 {
-    "$id": "defs", // Id used to reference this schema in other schemas
-    "definitions": {
-        "username": {
-            "title": "Username",
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9\\-_.]{3,25}$"
-        }
+  "$id": "defs", // Id used to reference this schema in other schemas
+  "definitions": {
+    "username": {
+      "title": "Username",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-_.]{3,25}$"
     }
+  }
 }
 
 // schemas/user.json
 [{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "GET User Params",
-    "type": "object",
-    "required": ["username"],
-    "properties": {
-        "username": { "$ref": "defs#/definitions/username" }
-    }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "GET User Params",
+  "type": "object",
+  "required": ["username"],
+  "properties": {
+    "username": { "$ref": "defs#/definitions/username" }
+  }
 }]
 
 // routes/user.js
@@ -391,18 +391,91 @@ const jvoptions = { schemas: su };
 const jv = new JSONValidator(null, jvoptions);
 ```
 
-### Respond
-A wrapper lib for the [`Express#res.send`](https://expressjs.com/en/4x/api.html#res.send) function. All responses are standardised.
-#### wrapSuccessData
-#### invalidRequest
-#### unavailableRetry
-#### notAuthorized
-#### forbidden
-#### notFound
-#### serverError
-#### notImplemented
-#### success
-#### redirect
+## Respond
+A wrapper lib for the [`Express#res.send`](https://expressjs.com/en/4x/api.html#res.send) function. All responses are standardised. Data returned for a successful request can be wrapped with `respond#wrapSuccessData()` before being passed to `respond#success()` to be returned to the requestor.
+```js
+const ayEs = require('ayes');
+const respond = ayEs.respond;
+
+// controller for /login route
+const loginController = function loginController(req, res) {
+  const { username, password } = req.body;
+  if (password) {
+    const response = {
+      id: Math.floor(Math.random() * 6) + 1,
+      username
+    };
+    respond.success(res, req, respond.wrapSuccessData(response, req.path));
+  }
+};
+
+// Responds to requester with JSON body
+{
+  "data": {
+    "id": 2,
+    "username": "nectarsoft"
+  },
+  "path": "/login"
+}
+```
+
+#### respond#forbidden(Object response, Object Request, Object Error)
+Will respond to the requestor with http status `403`. 
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus` and `code` properties. 
+
+If `httpstatus` is present, this will be used in place of `403`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#forbidden` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` property from the `Error` parameter if present or 'Forbidden' if not.
+```js
+{
+  "data": {
+    "message": "Forbidden" // Or Error.message is present
+  },
+  "type": "ForbiddenError"
+}
+
+```
+
+#### respond#invalidRequest(Object response, Object Request, Object Error)
+This response is intended to pass back information about any invalid request so a requester can amend and resubmit their failed request. 
+
+Any information to be passed to the requester can be attached to the `Error.info` property of the last parameter. 
+
+So, for example, if used in conjunction with an [`Error#JSONValidationError`](#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object) returned by the [`ayEs#JSONValidator`](#jsonvalidator) library we get a response body of the form
+```js
+response.invalidRequest(response, request ,JSONValidationError);
+// Returns a request body of e.g.
+{
+  "data": {
+    "message": "JSON validation errors were found against schema: postloginin",
+    "info": [
+      {
+        "keyword": "required",
+        "dataPath": "",
+        "schemaPath": "#/required",
+        "params": {
+          "missingProperty": "password"
+        },
+        "message": "should have required property 'password'"
+      }
+    ]
+   },
+  "type": "JSONValidationError",
+  "code": 400.43
+}
+```
+
+#### respond#notAuthorized(Object response, Object Request, Object Data)
+#### respond#notFound(Object response, Object Request, Object Data)
+#### respond#notImplemented(Object response, Object Request, Object Data)
+#### respond#redirect(Object response, Object Request, Object Data)
+#### respond#serverError(Object response, Object Request, Object Data)
+#### respond#success(Object response, Object Request, Object Data)
+#### respond#unavailableRetry(Object response, Object Request, Object Data)
+#### respond#wrapSuccessData(Object response, Object Request, Object Data)
 
 ### Reqvalidator
 A peculiar beast used for validating request formats. TODO.
@@ -415,73 +488,73 @@ Build an Express Router instance containing endpoints for each of the routes con
 * _auth_: This options takes an instance of [ayEs#Auth](#Auth).If present at this level the authentication middleware will be added to all endpoints configured in the `routes` array.
 * _jsonv_: This option takes an instance of the [ayEs#JSONValidator](#JSONValidator). If present, route configurations (in the routes option array) can indicate a json schema registered with the validator to use to validate request parameters.
 * _routes_: An array of endpoint configuration objects. Each object in the array will be used to build and add one endpoint to the returned `Express#Router`. Route configuration options are:
-	* _auth_: an instance of [ayEs#Auth](#Auth).If present at this level the authentication middleware will be added to only the endpoints configured in this route config. Clearly this will be overidden by any `Auth` instance in the `options.auth` option (which applies to all routes). If only some routes are required to be authenticated, or ypu wish to use a different authentication instance for any route, no `options.auth` option should be declared and the `auth` options set at the route configuration level for all authenticated routes.
-	* _method_: The [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) for this endpoint.
-	* _mwares_: An array of express middleware functions (or single function) for this endpoint. These middleware functions will be added to the router AFTER any authentication and validation middlewares that are generated by the `Auth` and/or `JSONValidator` instances in the `auth` or `jsonv` options.
-	* _path_: The path for this endpoint. This can be any string excepted as an express route path (see [here](https://expressjs.com/en/guide/routing.html#route-paths))
-	* _rxvalid_: A list of request validation requirements. __TODO__ Refactor this interface.
-	* _validreq_: A string identifier for a JSON schema registered with the `ayEs#JSONValidator` instance set as the `options.jsonv` option. The schema will be used to validate the request parameters to this endpoint. See [JSONValidator](#JSONValidator) for more details.
-	* _validres_: A string identifier for a JSON schema registered with the `ayEs#JSONValidator` instance set as the `options.jsonv` option. This is currently only used when [generating the documentation JSON](#self-documenting-endpoints) for the `OPTIONS` route. See [JSONValidator](#JSONValidator) for more details.
+    * _auth_: an instance of [ayEs#Auth](#Auth).If present at this level the authentication middleware will be added to only the endpoints configured in this route config. Clearly this will be overidden by any `Auth` instance in the `options.auth` option (which applies to all routes). If only some routes are required to be authenticated, or ypu wish to use a different authentication instance for any route, no `options.auth` option should be declared and the `auth` options set at the route configuration level for all authenticated routes.
+    * _method_: The [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) for this endpoint.
+    * _mwares_: An array of express middleware functions (or single function) for this endpoint. These middleware functions will be added to the router AFTER any authentication and validation middlewares that are generated by the `Auth` and/or `JSONValidator` instances in the `auth` or `jsonv` options.
+    * _path_: The path for this endpoint. This can be any string excepted as an express route path (see [here](https://expressjs.com/en/guide/routing.html#route-paths))
+    * _rxvalid_: A list of request validation requirements. __TODO__ Refactor this interface.
+    * _validreq_: A string identifier for a JSON schema registered with the `ayEs#JSONValidator` instance set as the `options.jsonv` option. The schema will be used to validate the request parameters to this endpoint. See [JSONValidator](#JSONValidator) for more details.
+    * _validres_: A string identifier for a JSON schema registered with the `ayEs#JSONValidator` instance set as the `options.jsonv` option. This is currently only used when [generating the documentation JSON](#self-documenting-endpoints) for the `OPTIONS` route. See [JSONValidator](#JSONValidator) for more details.
 
 ### Self documenting endpoints
 ```json
 {
-	"data": {
-		"/login": [{
-			"verb": "post",
-			"validations": {
-				"headers": {
-					"Accept": "application/json",
-					"Content-Type": "application/json"
-				}
-			},
-			"body_schema": {
-				"$schema": "http://json-schema.org/draft-07/schema#",
-				"$id": "postloginin",
-				"title": "Login Object",
-				"type": "object",
-				"properties": {
-					"email": {
-						"title": "user email",
-						"type": "string",
-						"format": "email"
-					},
-					"username": {
-						"title": "username",
-						"type": "string"
-					},
-					"password": {
-						"title": "user password",
-						"type": "string",
-						"minLength": 5,
-						"maxLength": 400
-					}
-				},
-				"required": ["username", "password"]
-			},
-			"response": {
-				"$schema": "http://json-schema.org/draft-07/schema#",
-				"$id": "postloginout",
-				"title": "Login Object",
-				"type": "object",
-				"properties": {
-					"id": {
-						"title": "user id",
-						"type": "string"
-					},
-					"username": {
-						"title": "username",
-						"type": "string"
-					},
-					"role": {
-						"title": "user role",
-						"type": "number"
-					}
-				},
-				"required": ["id", "username", "role"]
-			}
-		}]
-	},
-	"path": "/"
+  "data": {
+    "/login": [{
+      "verb": "post",
+      "validations": {
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        }
+      },
+      "body_schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "postloginin",
+        "title": "Login Object",
+        "type": "object",
+        "properties": {
+          "email": {
+            "title": "user email",
+            "type": "string",
+            "format": "email"
+          },
+          "username": {
+           "title": "username",
+           "type": "string"
+          },
+          "password": {
+            "title": "user password",
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 400
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "response": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "$id": "postloginout",
+        "title": "Login Object",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "user id",
+            "type": "string"
+          },
+          "username": {
+            "title": "username",
+            "type": "string"
+          },
+          "role": {
+            "title": "user role",
+            "type": "number"
+          }
+        },
+        "required": ["id", "username", "role"]
+      }
+    }]
+  },
+  "path": "/"
 }
 ```
