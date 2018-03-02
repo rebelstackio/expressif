@@ -301,7 +301,7 @@ A wrapper for the [AJV](https://github.com/epoberezkin/ajv) JSON schema validati
 The idea here is to create an instance of the `ayEs#JSONValidator` and register a set of JSON schema that can be used in route configuration. So, given a JSON schema for validating login parameters with an `$id` property of `postloginin`, such as 
 ```js 
 const authReqSchema = {
-	$schema: 'http://json-schema.org/draft-06/schema#',
+	$schema: 'http://json-schema.org/draft-07/schema#',
 	$id: 'postloginin',
 	title: 'Login Object',
 	type: 'object',
@@ -327,12 +327,12 @@ const authReqSchema = {
 ```
 we can instantiate the validator either by passing the schema to the constructor
 ```js
-const JSONValidator = ayEs.jsonvalidator;
+const JSONValidator = ayEs.JSONValidator;
 const jv = new JSONValidator(authReqSchema);
 ```
 or using the `JSONValidator#addSchema` instance function
 ```js
-const JSONValidator = ayEs.jsonvalidator;
+const JSONValidator = ayEs.JSONValidator;
 const jv = new JSONValidator();
 jv.addSchema(authReqSchema);
 ```
@@ -351,7 +351,45 @@ Now, this instance can be assigned to the [`Router#options#jsonv`](#options) pro
 	]
 }
 ```
-The router library will now add a validation middleware for request paramaters usign the schema indicated, Any failure against the schema is wrapped in a [`Error#JSONValidationError`](#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object) and reported back to the client using [`Respond#invalidRequest`](#invalidRequest).
+The router library will now add a validation middleware for request parameters using the schema indicated. Any failure against the schema is wrapped in a [`Error#JSONValidationError`](#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object) and reported back to the client using [`Respond#invalidRequest`](#invalidRequest).
+
+#### $ref in JSON schema
+If you use the [`$ref` property](https://spacetelescope.github.io/understanding-json-schema/structuring.html) in your JSON schema to reference common definitions in a separate schema file we must pass that to our `ayEs#JSONValidator` instance in a slightly different way. This is due to how it is passed to the underlying [`ajv` library](https://github.com/epoberezkin/ajv#ref).
+
+First add all the definition schemas into the array of schemas you wish to register with the validator and then wrap the array into an options object.
+```js
+// schemas/defs.json
+{
+    "$id": "defs", // Id used to reference this schema in other schemas
+    "definitions": {
+        "username": {
+            "title": "Username",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9\\-_.]{3,25}$"
+        }
+    }
+}
+
+// schemas/user.json
+[{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "GET User Params",
+    "type": "object",
+    "required": ["username"],
+    "properties": {
+        "username": { "$ref": "defs#/definitions/username" }
+    }
+}]
+
+// routes/user.js
+const JSONValidator = ayEs.JSONValidator;
+const ds = require('schemas/defs');
+const su = require('schemas/user');
+
+su.push(ds);
+const jvoptions = { schemas: su };
+const jv = new JSONValidator(null, jvoptions);
+```
 
 ### Respond
 A wrapper lib for the [`Express#res.send`](https://expressjs.com/en/4x/api.html#res.send) function. All responses are standardised.
@@ -398,7 +436,7 @@ Build an Express Router instance containing endpoints for each of the routes con
 				}
 			},
 			"body_schema": {
-				"$schema": "http://json-schema.org/draft-06/schema#",
+				"$schema": "http://json-schema.org/draft-07/schema#",
 				"$id": "postloginin",
 				"title": "Login Object",
 				"type": "object",
@@ -422,7 +460,7 @@ Build an Express Router instance containing endpoints for each of the routes con
 				"required": ["username", "password"]
 			},
 			"response": {
-				"$schema": "http://json-schema.org/draft-06/schema#",
+				"$schema": "http://json-schema.org/draft-07/schema#",
 				"$id": "postloginout",
 				"title": "Login Object",
 				"type": "object",
