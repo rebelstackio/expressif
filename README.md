@@ -282,6 +282,18 @@ Returns an `AWSError` instance with properties
 ```
 
 ### Error#codes
+Most times an error is sent back to a client along with a message to give more detail of the cause of the error. A `400 Bad Request` status does not let the client know what was incorrect in the request, so a message is added to clarify, "Email parameter must be a valid email". 
+
+There are two good cases when it might be better to replace that message with a code instead.
+* We care about bandwidth and want to send less bytes across the wire,
+* we want to inform the client app of an error but not a user who might read the response content.
+
+For this purpose `atEs` includes the concept of error codes that can be passed to the custom error constructors that give a little more detail about the error cause. These codes are read by the `ayEs#response` functions and a custom header, `X-Error-Code`, is added with the code. This can be read by developers or client applications for greater granularity of errors without verbose strings over the wire.
+
+#### codes
+See available codes and their meanings [here](lib/error/codes.js).
+
+__TODO__ Allow for code customisation.
 
 ### JSONValidator
 A wrapper for the [AJV](https://github.com/epoberezkin/ajv) JSON schema validation library used to validate request parameters.
