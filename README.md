@@ -295,7 +295,7 @@ See available codes and their meanings [here](lib/error/codes.js).
 
 __TODO__ Allow for code customisation.
 
-### JSONValidator
+## JSONValidator
 A wrapper for the [AJV](https://github.com/epoberezkin/ajv) JSON schema validation library used to validate request parameters.
 
 The idea here is to create an instance of the `ayEs#JSONValidator` and register a set of JSON schema that can be used in route configuration. So, given a JSON schema for validating login parameters with an `$id` property of `postloginin`, such as 
@@ -419,6 +419,7 @@ const loginController = function loginController(req, res) {
 }
 ```
 
+### Respond API
 #### respond#forbidden(Object response, Object Request, Object Error)
 Will respond to the requestor with http status `403`. 
 
@@ -468,19 +469,124 @@ response.invalidRequest(response, request ,JSONValidationError);
 }
 ```
 
-#### respond#notAuthorized(Object response, Object Request, Object Data)
-#### respond#notFound(Object response, Object Request, Object Data)
-#### respond#notImplemented(Object response, Object Request, Object Data)
-#### respond#redirect(Object response, Object Request, Object Data)
-#### respond#serverError(Object response, Object Request, Object Data)
-#### respond#success(Object response, Object Request, Object Data)
-#### respond#unavailableRetry(Object response, Object Request, Object Data)
+#### respond#notAuthorized(Object response, Object Request, Object Error)
+Will respond to the requestor with http status [`401`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) and set the `WWW-Authenticate` header to `Bearer token_path="JWT"`.
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus` and `code` properties. 
+
+If `httpstatus` is present, this will be used in place of `401`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#notAuthorized` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` property from the `Error` parameter if present or 'Authorisation error' if not.
+```js
+{
+  "data": {
+    "message": "Authorisation error" // Or Error.message is present
+  },
+  "type": "Not_Authorized_Error" // Or Error Constructor name.
+}
+```
+
+#### respond#notFound(Object response, Object Request, Object Error)
+Will respond to the requestor with http status [`404`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404). 
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus` and `code` properties. 
+
+If `httpstatus` is present, this will be used in place of `404`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#notFound` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` property from the `Error` parameter if present or 'Resource not found' if not.
+```js
+{
+  "data": {
+    "message": "Resource not found" // Or Error.message is present
+  },
+  "type": "Not_Found_Error" // Or Error Constructor name.
+}
+
+```
+
+#### respond#notImplemented(Object response, Object Request, Object Error)
+Will respond to the requestor with http status [`501`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/501). 
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus` and `code` properties. 
+
+If `httpstatus` is present, this will be used in place of `501`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#notImplemented` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` property from the `Error` parameter if present or 'Not Implemented' if not.
+```js
+{
+  "data": {
+    "message": "Not Implemented" // Or Error.message is present
+  },
+  "type": "Not_Implemented_Error" // Or Error Constructor name.
+}
+
+```
+
+#### respond#redirect(Object response, Object headers, Number statusCode, String noWrapDataStr)
+Will respond to the requestor with http status [`307`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307).
+
+The headers parameter should contain key value pairs of header names and values that will be added to the response. Typically this will include the `Location` header with an URL intended for the redirect.
+
+If `httpstatus` is present, this will be used in place of `307`.
+
+#### respond#serverError(Object response, Object Request, Object Error)
+Will respond to the requestor with http status [`500`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500). 
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus` and `code` properties. 
+
+If `httpstatus` is present, this will be used in place of `500`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#serverError` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` "Unexpected Error" if not and setting the type to "Server_Error".
+```js
+{
+  "data": {
+    "message": "Unexpected Error"
+  },
+  "type": "Server_Error" // Or Error Constructor name.
+}
+
+```
+
+#### respond#success(Object response, Object request, Object WrappedData, Number HttpStatus)
+Will respond to the requestor with http status [`200`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200).
+
+#### respond#unavailableRetry(Object response, Object Request, Object Error)
+Will respond to the requestor with http status [`503`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503).
+
+The last parameter is intended to be a custom `ayEs#Error` object and can include `message`, `httpstatus`, `retryafter` and `code` properties. 
+
+This response will set the `Retry-After` header to either the number 1 or a value passed in the `Error#retryafter` property. 
+
+If `httpstatus` is present, this will be used in place of `503`.
+
+The `code` property is anticipated to be one of ['ayes#Error#codes](#errorcodes) and if present `respond#unavailableRetry` returns an empty body and includes the custom header `X-Error-Code` set to the value of `code`.
+
+If `code` is not present a response body is sent using the `message` property from the `Error` parameter if present or 'Service temporarily unavailable. Please retry' if not.
+```js
+{
+  "data": {
+    "message": "Service temporarily unavailable. Please retry" // Or Error.message is present
+  },
+  "type": "Service_Unavailable_Please_Retry" // Or Error Constructor name.
+}
+
+```
+
 #### respond#wrapSuccessData(Object response, Object Request, Object Data)
 
-### Reqvalidator
+
+## Reqvalidator
 A peculiar beast used for validating request formats. TODO.
 
-### Router
+## Router
 #### Router#buildRouter(Object options) -> Express#Router
 Build an Express Router instance containing endpoints for each of the routes configured in the `options.routes`
 ##### options
