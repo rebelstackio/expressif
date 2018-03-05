@@ -558,6 +558,30 @@ If `code` is not present a response body is sent using the `message` "Unexpected
 #### respond#success(Object response, Object request, Object WrappedData, Number HttpStatus)
 Will respond to the requestor with http status [`200`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200).
 
+If `HttpStatus` parameter is present this will be used in place of `200`.
+
+If `WrappedData` if present it is used to build the response object, passing the data as teh `data` property of the response an either a `path` property, if one exists on the `wrappedData` object, or `type` property if not.
+
+```json
+{
+  "data": {
+    "id": 2,
+    "username": "nectarsoft"
+  },
+  "path": "/login"
+}
+// Or
+{
+  "data": {
+    "id": 2,
+    "username": "nectarsoft"
+  },
+  "type": "success"
+}
+```
+
+If no `WrappedData` parameter is passed `respond#success` will return an empty body, but still use http status `200` and not [`204`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204).
+
 #### respond#unavailableRetry(Object response, Object Request, Object Error)
 Will respond to the requestor with http status [`503`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503).
 
@@ -580,8 +604,14 @@ If `code` is not present a response body is sent using the `message` property fr
 
 ```
 
-#### respond#wrapSuccessData(Object response, Object Request, Object Data)
-
+#### respond#wrapSuccessData(Object Data, String path, Object options)
+A function to wrap the return data into an options object for the `respond#success` function.
+```js
+const wrappedData = Respond.wrapSuccessData(response, req.path, { stripNull: true });
+Respond.success(res, req, wrappedData);
+```
+__options__
+* stripNull : Boolean flag to pass to the `respond#success` function to indicate that any value in the data object with a null value should not be returned to the requester. 
 
 ## Reqvalidator
 A peculiar beast used for validating request formats. TODO.
@@ -603,6 +633,12 @@ Build an Express Router instance containing endpoints for each of the routes con
     * _validres_: A string identifier for a JSON schema registered with the `ayEs#JSONValidator` instance set as the `options.jsonv` option. This is currently only used when [generating the documentation JSON](#self-documenting-endpoints) for the `OPTIONS` route. See [JSONValidator](#JSONValidator) for more details.
 
 ### Self documenting endpoints
+If the flag `addOptionsRoute` is set on the options object passed to the `Router#buildRouter` function, it will add an `OPTIONS` endpoint at the root URL for that router that will return a `JSON` containing information about all routes within the router. This will include a `data` property that is an object whose property keys are the available paths for the router. Each path will have an array of objects describing each available verb for that path with the following properties:
+* _verb_: HTTP method
+* _validations_: What validations are carried out on the request format. Currently this will list required headers.
+* _body_schema_: A JSON schema for the parameters for this request.
+* _response_: A JSON schema describing the response for this endpoint.
+
 ```json
 {
   "data": {
