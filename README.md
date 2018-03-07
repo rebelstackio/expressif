@@ -15,6 +15,21 @@ Each stage is supported by library functions with the aim to standardise how ser
 
 * __Response__ is handled by a set of library functions that wrap all responses in a standard format and apply custom headers and response strategies. Again, the intention here is one of standardisation.
 
+## Contents
+* [Get started](#using-ayes)
+* [Authentication](#auth)
+    * [API](#auth-api)
+* [Error](#error)
+    * [API](#error-api)
+    * [Server-Errors](#server-errors)
+    * [Error codes](#errorcodes)
+* [JSON Validator](#jsonvalidator)
+* [Respond](#respond)
+    * [API](#respond-api)
+* [Request Validator](#reqvalidator)
+* [Router](#router)
+* [Self documenting endpoints](#self-documenting-endpoints)
+
 ## Using ayEs
 ```js
 const ayEs = require('ayes');
