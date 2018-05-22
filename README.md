@@ -1,7 +1,7 @@
 # At your Express service
 ayEs is a wrapper for the node [Express framework](https://expressjs.com/en/guide/routing.html) that adds some opinions as to how to structure simple web services on an api server. The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`. 
 
-![Service Request Flow](./docs/img/ServiceRequestFlow.svg)
+![Service Request Flow](https://raw.githubusercontent.com/rebelstackio/ayEs/develop/docs/img/ServiceRequestFlow.svg)
 
 Each stage is supported by library functions with the aim to standardise how service requests are validated and responded to.
 
