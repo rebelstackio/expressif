@@ -4,8 +4,8 @@
   "description": "Opinionated web service framework built on express",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_PATH=src node_modules/.bin/mocha test",
-    "coverage": "NODE_PATH=src node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec test"
+    "test": "node_modules/.bin/mocha test",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
   },
   "keywords": [
     "express",
@@ -13,14 +13,14 @@
   ],
   "contributors": [
     {
-      "name" : "Rein Petersen",
-      "email" : "email@reinpetersen.com",
-      "url" : "https://github.com/reinsbrain"
+      "name": "Rein Petersen",
+      "email": "email@reinpetersen.com",
+      "url": "https://github.com/reinsbrain"
     },
     {
-      "name" : "Russell Ormes",
-      "email" : "russell@nectarsoft.io",
-      "url" : "https://github.com/russormes"
+      "name": "Russell Ormes",
+      "email": "russell@nectarsoft.io",
+      "url": "https://github.com/russormes"
     }
   ],
   "license": "UNLICENSED",
