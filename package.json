@@ -1,9 +1,10 @@
 {
-  "name": "ayes",
-  "version": "v0.2.1",
+  "name": "expressify",
+  "version": "1.0.0",
   "description": "Opinionated web service framework built on express",
-  "main": "index.js",
+  "main": "bootstrap.js",
   "scripts": {
+    "start": "NODE_PATH=. node bootstrap.js",
     "test": "node_modules/.bin/mocha test",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
   },
@@ -41,7 +42,9 @@
   "dependencies": {
     "ajv": "^6.1.0",
     "app-module-path": "^2.2.0",
+    "compression": "^1.7.2",
     "express": "^4.16.2",
-    "jwt-simple": "^0.5.1"
+    "jwt-simple": "^0.5.1",
+    "method-override": "^3.0.0"
   }
 }
