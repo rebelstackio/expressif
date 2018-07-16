@@ -1,25 +1,19 @@
 const Auth = require('./lib/auth');
 
-const error = require('./lib/error');
+const AuthByPrivs = require('./lib/authbyprivs');
+
+const Exception = require('./lib/exception');
+
+const StackError = require('./lib/error');
 
 const JSONValidator = require('./lib/jsonvalidator');
 
-const reqvalidator = require('./lib/reqvalidator');
+const ReqValidator = require('./lib/reqvalidator');
 
-const respond = require('./lib/respond');
+const Respond = require('./lib/respond');
 
-const router = require('./lib/router');
-
-/**
- * Return an instance of the auth handler
- * @param {String} secret The JWT secret used in token creation.
- * @param {Object} options Pass a custom logger.
- * @returns {Object} Instance of Auth handler.
- */
-const returnAuthInstance = function returnAuthInstance(secret, options) {
-	return new Auth(secret, options);
-};
+const Router = require('./lib/router');
 
 module.exports = {
-	Auth, error, JSONValidator, returnAuthInstance, respond, reqvalidator, router
+	Server, Auth, AuthByPrivs, Exception, StackError, JSONValidator, Respond, ReqValidator, Router
 };
