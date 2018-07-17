@@ -1,4 +1,4 @@
 {
     "name": "respond",
-    "main": "./respond.js"
+    "main": "./index.js"
 }
