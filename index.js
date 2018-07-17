@@ -1,10 +1,8 @@
-const Auth = require('./lib/auth');
+/* index.js */
 
-const AuthByPrivs = require('./lib/authbyprivs');
+const { Auth, AuthByPrivs } = require('./lib/auth');
 
 const Exception = require('./lib/exception');
-
-const StackError = require('./lib/error');
 
 const JSONValidator = require('./lib/jsonvalidator');
 
@@ -15,5 +13,5 @@ const Respond = require('./lib/respond');
 const Router = require('./lib/router');
 
 module.exports = {
-	Server, Auth, AuthByPrivs, Exception, StackError, JSONValidator, Respond, ReqValidator, Router
+	Auth, AuthByPrivs, Exception, JSONValidator, Respond, ReqValidator, Router, Server
 };
