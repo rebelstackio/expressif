@@ -14,7 +14,7 @@ ttl.setHours(ttl.getHours() + 1);
 
 const { Auth, AuthByPrivs} = require('../../../lib/auth');
 
-describe('lib/auth/auth.js', function () {
+describe('lib/auth/simple', function () {
 
 	describe('$decodeJWT', function(){
 		it('should return correctly decoded', function(){
@@ -57,32 +57,53 @@ describe('lib/auth/auth.js', function () {
 		);
 	});
 
-	describe('#authbyprivs', function () {
+});
 
-		describe('#constructor', function () {
-			const auth = new AuthByPrivs(process.env.JWT_SECRET, {});
-			it('should return instanceof Auth', function(){
-				expect(auth).to.be.instanceof(Auth);	
+describe('lib/auth/authbyprivs', function () {
+
+	describe('#constructor', function () {
+		let auth = new AuthByPrivs(process.env.JWT_SECRET,{},[1]);
+		it('should return instanceof Auth', function(){
+			expect(auth).to.be.instanceof(Auth);	
+		});
+	});
+
+	describe('#generateAuthMiddleWare', function () {
+		let auth = new AuthByPrivs(process.env.JWT_SECRET,{});
+		const user_jwt = JWT.encode({'exp':ttl.getTime(),'privileges':[1,15]}, process.env.JWT_SECRET );
+		const bad_user_jwt = JWT.encode({'exp':ttl.getTime(),'privileges':[1,6]}, process.env.JWT_SECRET );
+		
+		it('should return an function for use as authentication middleware',function() {
+				const headers = { 'authorization': 'Bearer ' + user_jwt };
+				const req = MEREQ(headers);
+				const res = new (require('../../mock/express/response.js'))();
+				const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+				assert.equal(func_authChecker.length, 3, 'Middleware should expect three arguments');
+			}
+		);
+
+		it('should return the next callback with no error parameter when privileges match', function(done) {
+			const headers = { 'authorization': 'Bearer ' + user_jwt };
+			const req = MEREQ(headers);
+			const res = new (require('../../mock/express/response.js'))();
+			const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+			func_authChecker(req, res, function(error){
+				expect(error).to.be.undefined;
+				done();
 			});
 		});
-	
-		describe('#generateAuthMiddleWare', function () {
-			const auth = new Auth(process.env.JWT_SECRET, {});
-			const user_jwt = JWT.encode({'exp': ttl.getTime(), 'user':{'id':'123'}}, process.env.JWT_SECRET );
-			
-			it('should return an function for use as authentication middleware',
-				function () {
-					const headers = { 'authorization': 'Bearer ' + user_jwt };
-					const req = MEREQ(headers);
-					const res = new (require('../../mock/express/response.js'))();
-	
-					const func_authChecker = auth.generateAuthMiddleWare();
-	
-					assert.equal(func_authChecker.length, 3, 'Middleware should expect three arguments');
-				}
-			);
-		});		
 
-	});
+		it('should RESPOND X-error-code 401.13 when privileges mismatch', function(done) {
+			const headers = { 'authorization': 'Bearer ' + bad_user_jwt };
+			const req = MEREQ(headers);
+			const res = new (require('../../mock/express/response.js'))();
+			const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+			const response = func_authChecker(req, res, function(error_response){
+				expect(error_response._header["X-Error-Code"]).to.equal("401.13");
+				done();
+			});
+		});
+
+	});		
 
 });
