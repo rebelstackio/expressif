@@ -1,7 +1,7 @@
-# Expressify
-[![Build Status](https://travis-ci.com/rebelstackio/expressify.svg?branch=develop)](https://travis-ci.com/rebelstackio/expressify)
+# expressif
+[![Build Status](https://travis-ci.com/rebelstackio/expressif.svg?branch=develop)](https://travis-ci.com/rebelstackio/expressif)
 
-Expressify is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from [ayEs](https://github.com/rebelstackio/ayEs) but opines further for the sake of simplifying the construction of RESTful APIs.
+expressif is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from [ayEs](https://github.com/rebelstackio/ayEs) but opines further for the sake of simplifying the construction of RESTful APIs.
 
 The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`. 
 
@@ -20,7 +20,7 @@ Each stage is supported by library functions with the aim to standardise how ser
 * __Response__ is handled by a set of library functions that wrap all responses in a standard format and apply custom headers and response strategies.
 
 ## Contents
-* [Get started](#using-expressify)
+* [Get started](#using-expressif)
 * [Authentication](#auth)
     * [API](#auth-api)
 * [Error](#error)
@@ -34,10 +34,10 @@ Each stage is supported by library functions with the aim to standardise how ser
 * [Router](#router)
 * [Self documenting endpoints](#self-documenting-endpoints)
 
-## Using Expressify
+## Using expressif
 ```js
 /* Bootstrap a server */
-const {Server} = require('expressify');
+const {Server} = require('expressif');
 let myserver = new Server(/* config, globals */);
 
 /* Create a sample login controller to deal with login requests.

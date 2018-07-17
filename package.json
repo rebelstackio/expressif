@@ -1,5 +1,5 @@
 {
-  "name": "expressify",
+  "name": "expressif",
   "version": "1.0.0",
   "description": "Opinionated RESTful web service framework built on express",
   "main": "bootstrap.js",
