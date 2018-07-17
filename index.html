@@ -6,35 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.5.0 -->
-<title>expressify</title>
+<title>expressif</title>
 <meta name="generator" content="Jekyll v3.7.3" />
-<meta property="og:title" content="expressify" />
+<meta property="og:title" content="expressif" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server." />
 <meta property="og:description" content="A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server." />
-<link rel="shortcut icon" href="g/expressify-logo.svg" sizes="any" type="image/svg+xml">
-<link rel="canonical" href="https://rebelstackio.github.io/expressify/" />
-<meta property="og:url" content="https://rebelstackio.github.io/expressify/" />
-<meta property="og:site_name" content="expressify" />
+<link rel="shortcut icon" href="g/expressif-logo.svg" sizes="any" type="image/svg+xml">
+<link rel="canonical" href="https://rebelstackio.github.io/expressif/" />
+<meta property="og:url" content="https://rebelstackio.github.io/expressif/" />
+<meta property="og:site_name" content="expressif" />
 <script type="application/ld+json">
-{"name":"expressify","description":"A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server.","@type":"WebSite","url":"https://rebelstackio.github.io/expressify/","headline":"&lt;img src=”g/expressify-logo.svg” align=right&gt; Expressify","@context":"http://schema.org"}</script>
+{"name":"expressif","description":"A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server.","@type":"WebSite","url":"https://rebelstackio.github.io/expressif/","headline":"expressif","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/expressify/assets/css/style.css?v=d5db131c532260f819456b7377f664030f100170">
+    <link rel="stylesheet" href="/expressif/assets/css/style.css?v=d5db131c532260f819456b7377f664030f100170">
   </head>
   <body>
     <div class="container-lg px-3 my-5 markdown-body">
       
-<img id="logo" src="g/expressify-logo.svg" align=right>
-<h1><a href="https://rebelstackio.github.io/expressify/">expressify</a></h1>
+<img id="logo" src="g/expressif-logo.svg" align=right>
+<h1><a href="https://rebelstackio.github.io/expressif/">expressif</a></h1>
 
-<p><a href="https://travis-ci.com/rebelstackio/expressify"><img src="https://travis-ci.com/rebelstackio/expressify.svg?branch=develop" alt="Build Status" /></a></p>
+<p><a href="https://travis-ci.com/rebelstackio/expressif"><img src="https://travis-ci.com/rebelstackio/expressif.svg?branch=develop" alt="Build Status" /></a></p>
 
-<p>Expressify is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from <a href="https://github.com/rebelstackio/ayEs">ayEs</a> but opines further for the sake of simplifying the construction of RESTful APIs.</p>
+<p>expressif is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from <a href="https://github.com/rebelstackio/ayEs">ayEs</a> but opines further for the sake of simplifying the construction of RESTful APIs.</p>
 
 <p>The request flow goes through <code class="highlighter-rouge">authorize</code> -&gt; <code class="highlighter-rouge">validate request structure</code> -&gt; <code class="highlighter-rouge">validate request parameters</code> -&gt; <code class="highlighter-rouge">controller middleware</code> -&gt; <code class="highlighter-rouge">response</code>.</p>
 
-<p><img src="/expressify/g/ServiceRequestFlow.svg" alt="Service Request Flow" /></p>
+<p><img src="/expressif/g/ServiceRequestFlow.svg" alt="Service Request Flow" /></p>
 
 <p>Each stage is supported by library functions with the aim to standardise how service requests are validated and responded to.</p>
 
@@ -58,7 +58,7 @@
 
 <h2 id="contents">Contents</h2>
 <ul>
-  <li><a href="#using-expressify">Get started</a></li>
+  <li><a href="#using-expressif">Get started</a></li>
   <li><a href="#auth">Authentication</a>
     <ul>
       <li><a href="#auth-api">API</a></li>
@@ -82,9 +82,9 @@
   <li><a href="#self-documenting-endpoints">Self documenting endpoints</a></li>
 </ul>
 
-<h2 id="using-expressify">Using Expressify</h2>
+<h2 id="using-expressif">Using expressif</h2>
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* Bootstrap a server */</span>
-<span class="kd">const</span> <span class="p">{</span><span class="nx">Server</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'expressify'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="p">{</span><span class="nx">Server</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'expressif'</span><span class="p">);</span>
 <span class="kd">let</span> <span class="nx">myserver</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Server</span><span class="p">(</span><span class="cm">/* config, globals */</span><span class="p">);</span>
 
 <span class="cm">/* Create a sample login controller to deal with login requests.
