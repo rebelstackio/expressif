@@ -4,7 +4,7 @@ const chai = require("chai");
 const assert = chai.assert;
 
 const RESPOND = require('../../../lib/respond');
-const ERROR = require('../../../lib/error');
+const ERROR = require('../../../lib/exception');
 const MERESP = require('../../mock/express/response.js');
 
 describe('lib/respond/index.js', function () {
@@ -13,7 +13,7 @@ describe('lib/respond/index.js', function () {
 
         const req = {};
         const res = new MERESP();
-        const e = new ERROR.AuthError('JWT Authorization is required', ERROR.codes.JWT_CREDS_REQUIRED);
+        const e = new ERROR.BadAuth('JWT Authorization is required', ERROR.codes.JWT_CREDS_REQUIRED);
         const sendResp = RESPOND.notAuthorized(res, req, e);
 
         it('should send response with x-error-code header equal to error code',
