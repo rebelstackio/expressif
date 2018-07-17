@@ -1,8 +1,11 @@
-# At your Express service
-[![Build Status](https://travis-ci.com/rebelstackio/ayEs.svg?branch=develop)](https://travis-ci.com/rebelstackio/ayEs)
-ayEs is a wrapper for the node [Express framework](https://expressjs.com/en/guide/routing.html) that adds some opinions as to how to structure simple web services on an api server. The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`. 
+# Expressify
+[![Build Status](https://travis-ci.com/rebelstackio/expressify.svg?branch=develop)](https://travis-ci.com/rebelstackio/expressify)
 
-![Service Request Flow](https://raw.githubusercontent.com/rebelstackio/ayEs/develop/docs/img/ServiceRequestFlow.svg)
+Expressify is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from [ayEs](https://github.com/rebelstackio/ayEs) but opines further for the sake of simplifying the construction of RESTful APIs.
+
+The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`. 
+
+![Service Request Flow](docs/img/ServiceRequestFlow.svg)
 
 Each stage is supported by library functions with the aim to standardise how service requests are validated and responded to.
 
@@ -14,10 +17,10 @@ Each stage is supported by library functions with the aim to standardise how ser
 
 * __Controller middleware__ is an array of functions that make use of the ayES libraries for errors and responses, in order to standardize all service responses.
 
-* __Response__ is handled by a set of library functions that wrap all responses in a standard format and apply custom headers and response strategies. Again, the intention here is one of standardisation.
+* __Response__ is handled by a set of library functions that wrap all responses in a standard format and apply custom headers and response strategies.
 
 ## Contents
-* [Get started](#using-ayes)
+* [Get started](#using-expressify)
 * [Authentication](#auth)
     * [API](#auth-api)
 * [Error](#error)
@@ -31,16 +34,13 @@ Each stage is supported by library functions with the aim to standardise how ser
 * [Router](#router)
 * [Self documenting endpoints](#self-documenting-endpoints)
 
-## Using ayEs
+## Using Expressify
 ```js
-const ayEs = require('ayes');
-/**
- * Get a reference to the ayEs router helper lib
-*/
-const Router = ayEs.router;
+/* Bootstrap a server */
+const {Server} = require('expressify');
+let myserver = new Server(/* config, globals */);
 
-/**
- * Create a simple express middleware function to deal with login requests.
+/* Create a sample login controller to deal with login requests.
  * PLEASE NOTE: This is not a recommended login strategy for production sites.
 */
 const loginController = function loginController(req, res) {
