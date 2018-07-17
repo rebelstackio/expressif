@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>expressify</title>
+<meta name="generator" content="Jekyll v3.7.3" />
+<meta property="og:title" content="expressify" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server." />
+<meta property="og:description" content="A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server." />
+<link rel="canonical" href="https://rebelstackio.github.io/expressify/" />
+<meta property="og:url" content="https://rebelstackio.github.io/expressify/" />
+<meta property="og:site_name" content="expressify" />
+<script type="application/ld+json">
+{"name":"expressify","description":"A wrapper for the node Express framework that adds some opinions as to how to structure simple web services on an api server.","@type":"WebSite","url":"https://rebelstackio.github.io/expressify/","headline":"&lt;img src=”g/expressify-logo.svg” align=right&gt; Expressify","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/expressify/assets/css/style.css?v=d5db131c532260f819456b7377f664030f100170">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://rebelstackio.github.io/expressify/">expressify</a></h1>
+      <img id="logo" src=”g/expressify-logo.svg” align=right>
+
+<p><a href="https://travis-ci.com/rebelstackio/expressify"><img src="https://travis-ci.com/rebelstackio/expressify.svg?branch=develop" alt="Build Status" /></a></p>
+
+<p>Expressify is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from <a href="https://github.com/rebelstackio/ayEs">ayEs</a> but opines further for the sake of simplifying the construction of RESTful APIs.</p>
+
+<p>The request flow goes through <code class="highlighter-rouge">authorize</code> -&gt; <code class="highlighter-rouge">validate request structure</code> -&gt; <code class="highlighter-rouge">validate request parameters</code> -&gt; <code class="highlighter-rouge">controller middleware</code> -&gt; <code class="highlighter-rouge">response</code>.</p>
+
+<p><img src="/expressify/g/ServiceRequestFlow.svg" alt="Service Request Flow" /></p>
+
+<p>Each stage is supported by library functions with the aim to standardise how service requests are validated and responded to.</p>
+
+<ul>
+  <li>
+    <p><strong>Authorization</strong> is handled using <a href="https://jwt.io/"><code class="highlighter-rouge">JWT</code></a> and supports adding additional middleware to handle, for example, roles and/or permissions.</p>
+  </li>
+  <li>
+    <p><strong>Validation</strong> of request structure will check the headers and session state of the request and the requesting user and return errors appropriately on any failed validation.</p>
+  </li>
+  <li>
+    <p><strong>Validation</strong> of request parameters is handled using <a href="https://spacetelescope.github.io/understanding-json-schema/">JSON schemes</a>. If required these are provided as part of the endpoint specification and passed to the route builder as part of a route configuration.</p>
+  </li>
+  <li>
+    <p><strong>Controller middleware</strong> is an array of functions that make use of the ayES libraries for errors and responses, in order to standardize all service responses.</p>
+  </li>
+  <li>
+    <p><strong>Response</strong> is handled by a set of library functions that wrap all responses in a standard format and apply custom headers and response strategies.</p>
+  </li>
+</ul>
+
+<h2 id="contents">Contents</h2>
+<ul>
+  <li><a href="#using-expressify">Get started</a></li>
+  <li><a href="#auth">Authentication</a>
+    <ul>
+      <li><a href="#auth-api">API</a></li>
+    </ul>
+  </li>
+  <li><a href="#error">Error</a>
+    <ul>
+      <li><a href="#error-api">API</a></li>
+      <li><a href="#server-errors">Server-Errors</a></li>
+      <li><a href="#errorcodes">Error codes</a></li>
+    </ul>
+  </li>
+  <li><a href="#jsonvalidator">JSON Validator</a></li>
+  <li><a href="#respond">Respond</a>
+    <ul>
+      <li><a href="#respond-api">API</a></li>
+    </ul>
+  </li>
+  <li><a href="#reqvalidator">Request Validator</a></li>
+  <li><a href="#router">Router</a></li>
+  <li><a href="#self-documenting-endpoints">Self documenting endpoints</a></li>
+</ul>
+
+<h2 id="using-expressify">Using Expressify</h2>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* Bootstrap a server */</span>
+<span class="kd">const</span> <span class="p">{</span><span class="nx">Server</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'expressify'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">myserver</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Server</span><span class="p">(</span><span class="cm">/* config, globals */</span><span class="p">);</span>
+
+<span class="cm">/* Create a sample login controller to deal with login requests.
+ * PLEASE NOTE: This is not a recommended login strategy for production sites.
+*/</span>
+<span class="kd">const</span> <span class="nx">loginController</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">loginController</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">id</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nx">username</span>
+    <span class="p">};</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mi">200</span><span class="p">).</span><span class="nx">send</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="cm">/**
+ * The buildRouter helper function takes a configuration object with an 
+ * array of route definitions.
+*/</span>
+<span class="kd">const</span> <span class="nx">arouterdata</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">routes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'post'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s1">'/login'</span><span class="p">,</span>
+      <span class="na">mwares</span><span class="p">:</span> <span class="nx">loginController</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">};</span>
+<span class="cm">/**
+ * Call the Router#buildRouter function returns an express router with routes 
+ * for each configuration in the routes array.
+*/</span>
+<span class="kd">const</span> <span class="nx">authRouter</span> <span class="o">=</span> <span class="nx">Router</span><span class="p">.</span><span class="nx">buildRouter</span><span class="p">(</span><span class="nx">arouterdata</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Okay, but so far this is just a wrapper for the <code class="highlighter-rouge">Express#Router</code>. It gives us a nice clean format for router definitions, easy to read and reason about. Now let’s add more support for the <a href="#at-your-express-service">request flow</a> outlined above.</p>
+
+<h2 id="auth">Auth</h2>
+<p>ayEs provides an implementation of authentication by <a href="https://jwt.io/">JWT</a> through the <code class="highlighter-rouge">Auth</code> lib. If an endpoint or a set of endpoints grouped into a router instance requires authentication, create and instance of the <code class="highlighter-rouge">ayEs#Auth</code> handler and pass it to the route configuration.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">ayEs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'ayes'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">Auth</span> <span class="o">=</span> <span class="nx">ayes</span><span class="p">.</span><span class="nx">Auth</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Auth</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">JWT_SECRET</span><span class="p">);</span>
+<span class="c1">// Or use the factory function</span>
+<span class="kd">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="nx">ayEs</span><span class="p">.</span><span class="nx">returnAuthInstance</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">JWT_SECRET</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">routerOptions</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">routes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">auth</span><span class="p">:</span> <span class="nx">auth</span><span class="p">,</span> <span class="c1">//Pass the auth instance here to authenticate just the /me endpoint.</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'post'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s1">'/me'</span><span class="p">,</span>
+      <span class="na">mwares</span><span class="p">:</span> <span class="nx">getMe</span> <span class="c1">//A controller function</span>
+    <span class="p">},</span> <span class="p">...</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>If all routes for a particular router require authentication, simply pass the auth instance on the <code class="highlighter-rouge">options.auth</code> property of the router configuration instead.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">routerOptions</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">auth</span><span class="p">:</span> <span class="nx">auth</span><span class="p">,</span> <span class="c1">//Pass the auth instance here to authenticate all routes by JWT.</span>
+  <span class="na">routes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'post'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s1">'/me'</span><span class="p">,</span>
+      <span class="na">mwares</span><span class="p">:</span> <span class="nx">getMe</span> <span class="c1">//A controller function</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'put'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s1">'/some/other/authenticated/route'</span><span class="p">,</span>
+      <span class="na">mwares</span><span class="p">:</span> <span class="nx">anotherController</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Request to endpoints configured with the <code class="highlighter-rouge">ayEs#Auth</code> lib must send in an <code class="highlighter-rouge">Authorization: Bearer &lt;jwt&gt;</code> header with a valid JWT to access the service.</p>
+
+<p>The lib adds an express middleware function to the route that will handle JWT validation for authentication. This middleware decodes the JWT present in the request’s <code class="highlighter-rouge">Authorization</code> header, returning errors on failed validation. If the JWT is present and valid, the JWT payload is added to the express request object as the <code class="highlighter-rouge">dtoken</code> property, so you can access it inside any subsequent middleware.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * With a JWT payload of 
+ * {
+ *    "exp": "2018-03-01T04:49:49.781Z",
+ *    "user": {
+ *      "id": "596dcd99dd19f9227f5a94b1",
+ *      "username": "nectarsoft"
+ *    }
+ * }
+*/</span>
+<span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">dtoken</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">username</span><span class="p">)</span> <span class="c1">// nectarsoft</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="auth-api">Auth API</h3>
+<h4 id="new-ayesauthstring-jwtsecret-object-options----object-ayesauth">new ayEs#Auth(String jwtsecret, Object options)  -&gt; Object ayEs#auth</h4>
+<p>Create <code class="highlighter-rouge">ayEs#Auth</code> instance.</p>
+
+<p><strong>options</strong></p>
+
+<ul>
+  <li><em>logger</em>: A custom logger for the instance to use.</li>
+</ul>
+
+<h4 id="authdecodejwtstring-jwt-string-jwtsecret---object">Auth#decodeJWT(String jwt, String jwtsecret) -&gt; Object</h4>
+<p>Decodes the given <code class="highlighter-rouge">jwt</code> string and returns the jwt payload as an object. Throws an error if <code class="highlighter-rouge">jwt</code> is not valid.</p>
+
+<h4 id="authdecodeerrobject---object-ayeserror">Auth#decodeErr(Object) -&gt; Object ayEs#Error</h4>
+<p>Helper function that take the error object returned by <code class="highlighter-rouge">Auth#decodeJWT</code> and parses it to a custom <a href="#new-errorautherrorstring-message-string-code---object"><code class="highlighter-rouge">ayEs#Error#AuthError</code></a> type with relevant error code and message.</p>
+
+<h4 id="authencodejwtobject-payload-string-jwtsecret---string">Auth#encodeJWT(Object payload, String jwtsecret) -&gt; String</h4>
+<p>Returns a JWT string with <code class="highlighter-rouge">payload</code>, signed with the given secret key <code class="highlighter-rouge">jwtsecret</code>.</p>
+
+<h4 id="ayesreturnauthinstancestring-jwtsecret-object-options---object-ayesauth">ayEs#returnAuthInstance(String jwtsecret, Object options) -&gt; Object ayEs#auth</h4>
+<p>Helper factory function that returns an <code class="highlighter-rouge">ayEs#Auth</code> instances.</p>
+
+<h4 id="ayesauthgenerateauthmiddleware---functionobject-object-function">ayEs#auth#generateAuthMiddleWare() -&gt; Function&lt;Object, Object, Function&gt;</h4>
+<p>Returns the auth middleware function.</p>
+
+<p>This is exposed so that you can add additional authentication middleware if required.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">authMiddleware</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="nx">authMiddleware</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">auth</span><span class="p">.</span><span class="nx">generateAuthMiddleWare</span><span class="p">());</span>
+<span class="nx">authMiddleware</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">someOtherAuthFunction</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">routerOptions</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">auth</span><span class="p">:</span> <span class="nx">auth</span><span class="p">,</span> <span class="c1">// auth property can be an array of functions.</span>
+  <span class="na">routes</span><span class="p">:</span> <span class="p">[</span> <span class="p">...</span> <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="error">Error</h2>
+<p>A set of custom error objects for use in controller middleware to standardise error responses.</p>
+
+<p>All <code class="highlighter-rouge">Error</code> constructors accept a code parameter that can be used to pass in a code string as a non-verbose mechanism to give more specific detail about an error (see <a href="#errorcodes">error codes</a>).</p>
+
+<p>ayEs error objects are intended for use along side the <a href="#response">response</a> library to form a standard error response to api request.</p>
+
+<h3 id="error-api">Error API</h3>
+
+<h4 id="new-errorbadrequesterrorstring-message-string-code---object">new Error#BadRequestError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">BadRequestError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="new-errornotfounderrorstring-message-string-code---object">new Error#NotFoundError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">NotFoundError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">404</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorbadheadererrorstring-message-string-code---object">new Error#BadHeaderError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">BadHeaderError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorautherrorstring-message-string-code---object">new Error#AuthError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">AuthError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">401</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This is intended for authentication errors, not authorisation errors (see <a href="#new-errorforbiddenerrorstring-message-string-code---object">Error#ForbiddenError</a>)</p>
+
+<h4 id="new-errorforbiddenerrorstring-message-string-code---object">new Error#ForbiddenError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">ForbiddenError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">403</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="new-errorunauthorizederrorstring-message-string-code---object">new Error#UnauthorizedError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">UnauthorizedError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">401</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This is intended for authentication errors, not authorisation errors (see <a href="#new-errorforbiddenerrorstring-message-string-code---object">Error#ForbiddenError</a>)</p>
+
+<h4 id="new-errorunavailableretryerrorstring-message-string-code-string-retryafter---object">new Error#UnavailableRetryError(String message, String code, String retryafter) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">UnavailableRetryError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">503</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">retryafter</span> <span class="o">=</span> <span class="nx">retryafter</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This error includes a <code class="highlighter-rouge">retryafter</code> property to indicate a wait period until retrying to access the service. Can be used for temporary unavailability, such as cache updates.</p>
+
+<h4 id="new-errorconflicterrorstring-message-string-code---object">new Error#ConflictError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">ConflictError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">409</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errordatabasereturnerrorstring-message-string-code---object">new Error#DataBaseReturnError(String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">DataBaseReturnError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object">new Error#JSONValidationError(String message, Object errorData, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">JSONValidationError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">info</span> <span class="o">=</span> <span class="nx">errorData</span><span class="p">;</span>
+</code></pre></div></div>
+<p>This error is used by the <a href="#jsonvalidator"><code class="highlighter-rouge">JSONValidator</code></a> lib to return errors on validation. The validation error data is passed in the <code class="highlighter-rouge">info</code> property.</p>
+
+<h3 id="server-errors">Server Errors</h3>
+<p>There are a set of errors that wrap server errors and are passed the original error as a parameter to the constructor. This error object is then available on the <code class="highlighter-rouge">errObj</code> property.</p>
+
+<h4 id="new-errordatabaseerrorobject-errobj-string-message-string-code---object">new Error#DataBaseError(Object errobj, String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">DataBaseError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">errObj</span> <span class="o">=</span> <span class="nx">errobj</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorservererrorobject-errobj-string-message-string-code---object">new Error#ServerError(Object errobj, String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">ServerError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">errObj</span> <span class="o">=</span> <span class="nx">errobj</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorfberrorobject-errobj-string-message-string-code---object">new Error#FBError(Object errobj, String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">FBError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">errObj</span> <span class="o">=</span> <span class="nx">errobj</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="new-errorawserrorobject-errobj-string-message-string-code---object">new Error#AWSError(Object errobj, String message, String code) -&gt; Object</h4>
+<p>Returns an <code class="highlighter-rouge">AWSError</code> instance with properties</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="nx">message</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">errObj</span> <span class="o">=</span> <span class="nx">errobj</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+  <span class="nx">error</span><span class="p">.</span><span class="nx">httpstatus</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="errorcodes">Error#codes</h3>
+<p>Most times an error is sent back to a client along with a message to give more detail of the cause of the error. A <code class="highlighter-rouge">400 Bad Request</code> status does not let the client know what was incorrect in the request, so a message is added to clarify, “Email parameter must be a valid email”.</p>
+
+<p>There are two good cases when it might be better to replace that message with a code instead.</p>
+<ul>
+  <li>We care about bandwidth and want to send less bytes across the wire,</li>
+  <li>we want to inform the client app of an error but not a user who might read the response content.</li>
+</ul>
+
+<p>For this purpose <code class="highlighter-rouge">atEs</code> includes the concept of error codes that can be passed to the custom error constructors that give a little more detail about the error cause. These codes are read by the <code class="highlighter-rouge">ayEs#response</code> functions and a custom header, <code class="highlighter-rouge">X-Error-Code</code>, is added with the code. This can be read by developers or client applications for greater granularity of errors without verbose strings over the wire.</p>
+
+<h4 id="codes">codes</h4>
+<p>See available codes and their meanings <a href="lib/error/codes.js">here</a>.</p>
+
+<p><strong>TODO</strong> Allow for code customisation.</p>
+
+<h2 id="jsonvalidator">JSONValidator</h2>
+<p>A wrapper for the <a href="https://github.com/epoberezkin/ajv">AJV</a> JSON schema validation library used to validate request parameters.</p>
+
+<p>The idea here is to create an instance of the <code class="highlighter-rouge">ayEs#JSONValidator</code> and register a set of JSON schema that can be used in route configuration. So, given a JSON schema for validating login parameters with an <code class="highlighter-rouge">$id</code> property of <code class="highlighter-rouge">postloginin</code>, such as</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">authReqSchema</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">$schema</span><span class="p">:</span> <span class="s1">'http://json-schema.org/draft-07/schema#'</span><span class="p">,</span>
+  <span class="na">$id</span><span class="p">:</span> <span class="s1">'postloginin'</span><span class="p">,</span>
+  <span class="na">title</span><span class="p">:</span> <span class="s1">'Login Object'</span><span class="p">,</span>
+  <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+  <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">email</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="s1">'user email'</span><span class="p">,</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
+      <span class="na">format</span><span class="p">:</span> <span class="s1">'email'</span>
+    <span class="p">},</span>
+    <span class="na">username</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="s1">'username'</span><span class="p">,</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span>
+    <span class="p">},</span>
+    <span class="na">password</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="s1">'user password'</span><span class="p">,</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span><span class="p">,</span>
+        <span class="na">minLength</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="na">maxLength</span><span class="p">:</span> <span class="mi">400</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="na">required</span><span class="p">:</span> <span class="p">[</span><span class="s1">'username'</span><span class="p">,</span> <span class="s1">'password'</span><span class="p">]</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>we can instantiate the validator either by passing the schema to the constructor</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">JSONValidator</span> <span class="o">=</span> <span class="nx">ayEs</span><span class="p">.</span><span class="nx">JSONValidator</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">jv</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JSONValidator</span><span class="p">(</span><span class="nx">authReqSchema</span><span class="p">);</span>
+</code></pre></div></div>
+<p>or using the <code class="highlighter-rouge">JSONValidator#addSchema</code> instance function</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">JSONValidator</span> <span class="o">=</span> <span class="nx">ayEs</span><span class="p">.</span><span class="nx">JSONValidator</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">jv</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JSONValidator</span><span class="p">();</span>
+<span class="nx">jv</span><span class="p">.</span><span class="nx">addSchema</span><span class="p">(</span><span class="nx">authReqSchema</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Now, this instance can be assigned to the <a href="#options"><code class="highlighter-rouge">Router#options#jsonv</code></a> property and the registered schema can be referenced in a route configuration as <code class="highlighter-rouge">validreq: 'postloginin'</code></p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">jsonv</span><span class="p">:</span> <span class="nx">jv</span><span class="p">,</span>
+  <span class="nx">routes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'post'</span><span class="p">,</span>
+      <span class="na">path</span><span class="p">:</span> <span class="s1">'/login'</span><span class="p">,</span>
+      <span class="na">mwares</span><span class="p">:</span> <span class="nx">loginController</span><span class="p">,</span>
+      <span class="na">validreq</span><span class="p">:</span> <span class="s1">'postloginin'</span> <span class="c1">// Reference the schema here</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>The router library will now add a validation middleware for request parameters using the schema indicated. Any failure against the schema is wrapped in a <a href="#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object"><code class="highlighter-rouge">Error#JSONValidationError</code></a> and reported back to the client using <a href="#invalidRequest"><code class="highlighter-rouge">Respond#invalidRequest</code></a>.</p>
+
+<h4 id="ref-in-json-schema">$ref in JSON schema</h4>
+<p>If you use the <a href="https://spacetelescope.github.io/understanding-json-schema/structuring.html"><code class="highlighter-rouge">$ref</code> property</a> in your JSON schema to reference common definitions in a separate schema file we must pass that to our <code class="highlighter-rouge">ayEs#JSONValidator</code> instance in a slightly different way. This is due to how it is passed to the underlying <a href="https://github.com/epoberezkin/ajv#ref"><code class="highlighter-rouge">ajv</code> library</a>.</p>
+
+<p>First add all the definition schemas into the array of schemas you wish to register with the validator and then wrap the array into an options object.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// schemas/defs.json</span>
+<span class="p">{</span>
+  <span class="s2">"$id"</span><span class="p">:</span> <span class="s2">"defs"</span><span class="p">,</span> <span class="c1">// Id used to reference this schema in other schemas</span>
+  <span class="s2">"definitions"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Username"</span><span class="p">,</span>
+      <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"string"</span><span class="p">,</span>
+      <span class="s2">"pattern"</span><span class="p">:</span> <span class="s2">"^[a-zA-Z0-9</span><span class="err">\\</span><span class="s2">-_.]{3,25}$"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// schemas/user.json</span>
+<span class="p">[{</span>
+  <span class="s2">"$schema"</span><span class="p">:</span> <span class="s2">"http://json-schema.org/draft-07/schema#"</span><span class="p">,</span>
+  <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"GET User Params"</span><span class="p">,</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"object"</span><span class="p">,</span>
+  <span class="s2">"required"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"username"</span><span class="p">],</span>
+  <span class="s2">"properties"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="p">{</span> <span class="s2">"$ref"</span><span class="p">:</span> <span class="s2">"defs#/definitions/username"</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}]</span>
+
+<span class="c1">// routes/user.js</span>
+<span class="kd">const</span> <span class="nx">JSONValidator</span> <span class="o">=</span> <span class="nx">ayEs</span><span class="p">.</span><span class="nx">JSONValidator</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">ds</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'schemas/defs'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">su</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'schemas/user'</span><span class="p">);</span>
+
+<span class="nx">su</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">ds</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">jvoptions</span> <span class="o">=</span> <span class="p">{</span> <span class="na">schemas</span><span class="p">:</span> <span class="nx">su</span> <span class="p">};</span>
+<span class="kd">const</span> <span class="nx">jv</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JSONValidator</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">jvoptions</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="respond">Respond</h2>
+<p>A wrapper lib for the <a href="https://expressjs.com/en/4x/api.html#res.send"><code class="highlighter-rouge">Express#res.send</code></a> function. All responses are standardised. Data returned for a successful request can be wrapped with <code class="highlighter-rouge">respond#wrapSuccessData()</code> before being passed to <code class="highlighter-rouge">respond#success()</code> to be returned to the requestor.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">ayEs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'ayes'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">respond</span> <span class="o">=</span> <span class="nx">ayEs</span><span class="p">.</span><span class="nx">respond</span><span class="p">;</span>
+
+<span class="c1">// controller for /login route</span>
+<span class="kd">const</span> <span class="nx">loginController</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">loginController</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">id</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nx">username</span>
+    <span class="p">};</span>
+    <span class="nx">respond</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">respond</span><span class="p">.</span><span class="nx">wrapSuccessData</span><span class="p">(</span><span class="nx">response</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">path</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Responds to requester with JSON body</span>
+<span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="p">:</span> <span class="s2">"nectarsoft"</span>
+  <span class="p">},</span>
+  <span class="s2">"path"</span><span class="p">:</span> <span class="s2">"/login"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="respond-api">Respond API</h3>
+<h4 id="respondforbiddenobject-response-object-request-object-error">respond#forbidden(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <code class="highlighter-rouge">403</code>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">403</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#forbidden</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> property from the <code class="highlighter-rouge">Error</code> parameter if present or ‘Forbidden’ if not.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Forbidden"</span> <span class="c1">// Or Error.message is present</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"ForbiddenError"</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h4 id="respondinvalidrequestobject-response-object-request-object-error">respond#invalidRequest(Object response, Object Request, Object Error)</h4>
+<p>This response is intended to pass back information about any invalid request so a requester can amend and resubmit their failed request.</p>
+
+<p>Any information to be passed to the requester can be attached to the <code class="highlighter-rouge">Error.info</code> property of the last parameter.</p>
+
+<p>So, for example, if used in conjunction with an <a href="#new-errorjsonvalidationerrorstring-message-object-errordata-string-code---object"><code class="highlighter-rouge">Error#JSONValidationError</code></a> returned by the <a href="#jsonvalidator"><code class="highlighter-rouge">ayEs#JSONValidator</code></a> library we get a response body of the form</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">response</span><span class="p">.</span><span class="nx">invalidRequest</span><span class="p">(</span><span class="nx">response</span><span class="p">,</span> <span class="nx">request</span> <span class="p">,</span><span class="nx">JSONValidationError</span><span class="p">);</span>
+<span class="c1">// Returns a request body of e.g.</span>
+<span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"JSON validation errors were found against schema: postloginin"</span><span class="p">,</span>
+    <span class="s2">"info"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"keyword"</span><span class="p">:</span> <span class="s2">"required"</span><span class="p">,</span>
+        <span class="s2">"dataPath"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="s2">"schemaPath"</span><span class="p">:</span> <span class="s2">"#/required"</span><span class="p">,</span>
+        <span class="s2">"params"</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">"missingProperty"</span><span class="p">:</span> <span class="s2">"password"</span>
+        <span class="p">},</span>
+        <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"should have required property 'password'"</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+   <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"JSONValidationError"</span><span class="p">,</span>
+  <span class="s2">"code"</span><span class="p">:</span> <span class="mf">400.43</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="respondnotauthorizedobject-response-object-request-object-error">respond#notAuthorized(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401"><code class="highlighter-rouge">401</code></a> and set the <code class="highlighter-rouge">WWW-Authenticate</code> header to <code class="highlighter-rouge">Bearer token_path="JWT"</code>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">401</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#notAuthorized</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> property from the <code class="highlighter-rouge">Error</code> parameter if present or ‘Authorisation error’ if not.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Authorisation error"</span> <span class="c1">// Or Error.message is present</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Not_Authorized_Error"</span> <span class="c1">// Or Error Constructor name.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="respondnotfoundobject-response-object-request-object-error">respond#notFound(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"><code class="highlighter-rouge">404</code></a>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">404</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#notFound</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> property from the <code class="highlighter-rouge">Error</code> parameter if present or ‘Resource not found’ if not.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Resource not found"</span> <span class="c1">// Or Error.message is present</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Not_Found_Error"</span> <span class="c1">// Or Error Constructor name.</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h4 id="respondnotimplementedobject-response-object-request-object-error">respond#notImplemented(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/501"><code class="highlighter-rouge">501</code></a>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">501</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#notImplemented</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> property from the <code class="highlighter-rouge">Error</code> parameter if present or ‘Not Implemented’ if not.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Not Implemented"</span> <span class="c1">// Or Error.message is present</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Not_Implemented_Error"</span> <span class="c1">// Or Error Constructor name.</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h4 id="respondredirectobject-response-object-headers-number-statuscode-string-nowrapdatastr">respond#redirect(Object response, Object headers, Number statusCode, String noWrapDataStr)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307"><code class="highlighter-rouge">307</code></a>.</p>
+
+<p>The headers parameter should contain key value pairs of header names and values that will be added to the response. Typically this will include the <code class="highlighter-rouge">Location</code> header with an URL intended for the redirect.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">307</code>.</p>
+
+<h4 id="respondservererrorobject-response-object-request-object-error">respond#serverError(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"><code class="highlighter-rouge">500</code></a>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">500</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#serverError</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> “Unexpected Error” if not and setting the type to “Server_Error”.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Unexpected Error"</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Server_Error"</span> <span class="c1">// Or Error Constructor name.</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h4 id="respondsuccessobject-response-object-request-object-wrappeddata-number-httpstatus">respond#success(Object response, Object request, Object WrappedData, Number HttpStatus)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200"><code class="highlighter-rouge">200</code></a>.</p>
+
+<p>If <code class="highlighter-rouge">HttpStatus</code> parameter is present this will be used in place of <code class="highlighter-rouge">200</code>.</p>
+
+<p>If <code class="highlighter-rouge">WrappedData</code> if present it is used to build the response object, passing the data as teh <code class="highlighter-rouge">data</code> property of the response an either a <code class="highlighter-rouge">path</code> property, if one exists on the <code class="highlighter-rouge">wrappedData</code> object, or <code class="highlighter-rouge">type</code> property if not.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nectarsoft"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/login"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="err">//</span><span class="w"> </span><span class="err">Or</span><span class="w">
+</span><span class="p">{</span><span class="w">
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nectarsoft"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"success"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>If no <code class="highlighter-rouge">WrappedData</code> parameter is passed <code class="highlighter-rouge">respond#success</code> will return an empty body, but still use http status <code class="highlighter-rouge">200</code> and not <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204"><code class="highlighter-rouge">204</code></a>.</p>
+
+<h4 id="respondunavailableretryobject-response-object-request-object-error">respond#unavailableRetry(Object response, Object Request, Object Error)</h4>
+<p>Will respond to the requestor with http status <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503"><code class="highlighter-rouge">503</code></a>.</p>
+
+<p>The last parameter is intended to be a custom <code class="highlighter-rouge">ayEs#Error</code> object and can include <code class="highlighter-rouge">message</code>, <code class="highlighter-rouge">httpstatus</code>, <code class="highlighter-rouge">retryafter</code> and <code class="highlighter-rouge">code</code> properties.</p>
+
+<p>This response will set the <code class="highlighter-rouge">Retry-After</code> header to either the number 1 or a value passed in the <code class="highlighter-rouge">Error#retryafter</code> property.</p>
+
+<p>If <code class="highlighter-rouge">httpstatus</code> is present, this will be used in place of <code class="highlighter-rouge">503</code>.</p>
+
+<p>The <code class="highlighter-rouge">code</code> property is anticipated to be one of <a href="#errorcodes">‘ayes#Error#codes</a> and if present <code class="highlighter-rouge">respond#unavailableRetry</code> returns an empty body and includes the custom header <code class="highlighter-rouge">X-Error-Code</code> set to the value of <code class="highlighter-rouge">code</code>.</p>
+
+<p>If <code class="highlighter-rouge">code</code> is not present a response body is sent using the <code class="highlighter-rouge">message</code> property from the <code class="highlighter-rouge">Error</code> parameter if present or ‘Service temporarily unavailable. Please retry’ if not.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"message"</span><span class="p">:</span> <span class="s2">"Service temporarily unavailable. Please retry"</span> <span class="c1">// Or Error.message is present</span>
+  <span class="p">},</span>
+  <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"Service_Unavailable_Please_Retry"</span> <span class="c1">// Or Error Constructor name.</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h4 id="respondwrapsuccessdataobject-data-string-path-object-options">respond#wrapSuccessData(Object Data, String path, Object options)</h4>
+<p>A function to wrap the return data into an options object for the <code class="highlighter-rouge">respond#success</code> function.</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">wrappedData</span> <span class="o">=</span> <span class="nx">Respond</span><span class="p">.</span><span class="nx">wrapSuccessData</span><span class="p">(</span><span class="nx">response</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span> <span class="p">{</span> <span class="na">stripNull</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+<span class="nx">Respond</span><span class="p">.</span><span class="nx">success</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">req</span><span class="p">,</span> <span class="nx">wrappedData</span><span class="p">);</span>
+</code></pre></div></div>
+<p><strong>options</strong></p>
+<ul>
+  <li>stripNull : Boolean flag to pass to the <code class="highlighter-rouge">respond#success</code> function to indicate that any value in the data object with a null value should not be returned to the requester.</li>
+</ul>
+
+<h2 id="reqvalidator">Reqvalidator</h2>
+<p>A peculiar beast used for validating request formats. TODO.</p>
+
+<h2 id="router">Router</h2>
+<h4 id="routerbuildrouterobject-options---expressrouter">Router#buildRouter(Object options) -&gt; Express#Router</h4>
+<p>Build an Express Router instance containing endpoints for each of the routes configured in the <code class="highlighter-rouge">options.routes</code></p>
+<h5 id="options">options</h5>
+<ul>
+  <li><em>addOptionsRoute</em>: Boolean flag to indicate whether to add an <code class="highlighter-rouge">options</code> endpoint that returns a documentation JSON as described <a href="#self-documenting-endpoints">here</a>. Defaults to <code class="highlighter-rouge">false</code>.</li>
+  <li><em>auth</em>: This options takes an instance of <a href="#Auth">ayEs#Auth</a>.If present at this level the authentication middleware will be added to all endpoints configured in the <code class="highlighter-rouge">routes</code> array.</li>
+  <li><em>jsonv</em>: This option takes an instance of the <a href="#JSONValidator">ayEs#JSONValidator</a>. If present, route configurations (in the routes option array) can indicate a json schema registered with the validator to use to validate request parameters.</li>
+  <li><em>routes</em>: An array of endpoint configuration objects. Each object in the array will be used to build and add one endpoint to the returned <code class="highlighter-rouge">Express#Router</code>. Route configuration options are:
+    <ul>
+      <li><em>auth</em>: an instance of <a href="#Auth">ayEs#Auth</a>.If present at this level the authentication middleware will be added to only the endpoints configured in this route config. Clearly this will be overidden by any <code class="highlighter-rouge">Auth</code> instance in the <code class="highlighter-rouge">options.auth</code> option (which applies to all routes). If only some routes are required to be authenticated, or ypu wish to use a different authentication instance for any route, no <code class="highlighter-rouge">options.auth</code> option should be declared and the <code class="highlighter-rouge">auth</code> options set at the route configuration level for all authenticated routes.</li>
+      <li><em>method</em>: The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">HTTP method</a> for this endpoint.</li>
+      <li><em>mwares</em>: An array of express middleware functions (or single function) for this endpoint. These middleware functions will be added to the router AFTER any authentication and validation middlewares that are generated by the <code class="highlighter-rouge">Auth</code> and/or <code class="highlighter-rouge">JSONValidator</code> instances in the <code class="highlighter-rouge">auth</code> or <code class="highlighter-rouge">jsonv</code> options.</li>
+      <li><em>path</em>: The path for this endpoint. This can be any string excepted as an express route path (see <a href="https://expressjs.com/en/guide/routing.html#route-paths">here</a>)</li>
+      <li><em>rxvalid</em>: A list of request validation requirements. <strong>TODO</strong> Refactor this interface.</li>
+      <li><em>validreq</em>: A string identifier for a JSON schema registered with the <code class="highlighter-rouge">ayEs#JSONValidator</code> instance set as the <code class="highlighter-rouge">options.jsonv</code> option. The schema will be used to validate the request parameters to this endpoint. See <a href="#JSONValidator">JSONValidator</a> for more details.</li>
+      <li><em>validres</em>: A string identifier for a JSON schema registered with the <code class="highlighter-rouge">ayEs#JSONValidator</code> instance set as the <code class="highlighter-rouge">options.jsonv</code> option. This is currently only used when <a href="#self-documenting-endpoints">generating the documentation JSON</a> for the <code class="highlighter-rouge">OPTIONS</code> route. See <a href="#JSONValidator">JSONValidator</a> for more details.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="self-documenting-endpoints">Self documenting endpoints</h3>
+<p>If the flag <code class="highlighter-rouge">addOptionsRoute</code> is set on the options object passed to the <code class="highlighter-rouge">Router#buildRouter</code> function, it will add an <code class="highlighter-rouge">OPTIONS</code> endpoint at the root URL for that router that will return a <code class="highlighter-rouge">JSON</code> containing information about all routes within the router. This will include a <code class="highlighter-rouge">data</code> property that is an object whose property keys are the available paths for the router. Each path will have an array of objects describing each available verb for that path with the following properties:</p>
+<ul>
+  <li><em>verb</em>: HTTP method</li>
+  <li><em>validations</em>: What validations are carried out on the request format. Currently this will list required headers.</li>
+  <li><em>body_schema</em>: A JSON schema for the parameters for this request.</li>
+  <li><em>response</em>: A JSON schema describing the response for this endpoint.</li>
+</ul>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"/login"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w">
+      </span><span class="s2">"verb"</span><span class="p">:</span><span class="w"> </span><span class="s2">"post"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"validations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"Accept"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="p">,</span><span class="w">
+          </span><span class="s2">"Content-Type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"body_schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://json-schema.org/draft-07/schema#"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"$id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"postloginin"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Login Object"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user email"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"email"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+           </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w">
+           </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"password"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user password"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"minLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"maxLength"</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"username"</span><span class="p">,</span><span class="w"> </span><span class="s2">"password"</span><span class="p">]</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="s2">"response"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://json-schema.org/draft-07/schema#"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"$id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"postloginout"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Login Object"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user id"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"username"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="s2">"role"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user role"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="s2">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"id"</span><span class="p">,</span><span class="w"> </span><span class="s2">"username"</span><span class="p">,</span><span class="w"> </span><span class="s2">"role"</span><span class="p">]</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  </body>
+</html>
