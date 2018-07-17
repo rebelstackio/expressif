@@ -1,7 +1,7 @@
 {
   "name": "expressify",
   "version": "1.0.0",
-  "description": "Opinionated web service framework built on express",
+  "description": "Opinionated RESTful web service framework built on express",
   "main": "bootstrap.js",
   "scripts": {
     "start": "NODE_PATH=. node bootstrap.js",
