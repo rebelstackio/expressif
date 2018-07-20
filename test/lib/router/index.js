@@ -22,7 +22,8 @@ describe('lib/router', function () {
 			{ "$schema":"http://json-schema.org/draft-06/schema#","$id":"testin", "type":["number","string","boolean","null","object","array"] },
 			{ "$schema":"http://json-schema.org/draft-06/schema#","$id":"testout","type":["number","string","boolean","null","object","array"] }
 		];
-		let jv = new JSONValidator(schemas);
+		let jv = new JSONValidator();
+		jv.addSchema(schemas);
 		const mwares = function ( req, res ) {
 			RESPOND.success(res,req,respond.wrapSuccessData("a response!", req.path));
 		};
