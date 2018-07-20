@@ -1,6 +1,6 @@
-/**
- * Test definitions for the auth library
- */
+/* test/lib/auth/index.js */
+'use strict';
+
 const chai = require('chai');
 const should = chai.should();
 const expect = chai.expect;
@@ -50,7 +50,7 @@ describe('lib/auth/simple', function () {
 				const req = MEREQ(headers);
 				const res = new (require('../../mock/express/response.js'))();
 
-				const func_authChecker = auth.generateAuthMiddleWare();
+				const func_authChecker = auth.middleware();
 
 				assert.equal(func_authChecker.length, 3, 'Middleware should expect three arguments');
 			}
@@ -62,13 +62,13 @@ describe('lib/auth/simple', function () {
 describe('lib/auth/authbyprivs', function () {
 
 	describe('#constructor', function () {
-		let auth = new AuthByPrivs(process.env.JWT_SECRET,{},[1]);
+		let auth = new AuthByPrivs(process.env.JWT_SECRET,{});
 		it('should return instanceof Auth', function(){
 			expect(auth).to.be.instanceof(Auth);	
 		});
 	});
 
-	describe('#generateAuthMiddleWare', function () {
+	describe('#middleware', function () {
 		let auth = new AuthByPrivs(process.env.JWT_SECRET,{});
 		const user_jwt = JWT.encode({'exp':ttl.getTime(),'privileges':[1,15]}, process.env.JWT_SECRET );
 		const bad_user_jwt = JWT.encode({'exp':ttl.getTime(),'privileges':[1,6]}, process.env.JWT_SECRET );
@@ -77,7 +77,7 @@ describe('lib/auth/authbyprivs', function () {
 				const headers = { 'authorization': 'Bearer ' + user_jwt };
 				const req = MEREQ(headers);
 				const res = new (require('../../mock/express/response.js'))();
-				const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+				const func_authChecker = auth.middleware([0,7]);
 				assert.equal(func_authChecker.length, 3, 'Middleware should expect three arguments');
 			}
 		);
@@ -86,7 +86,7 @@ describe('lib/auth/authbyprivs', function () {
 			const headers = { 'authorization': 'Bearer ' + user_jwt };
 			const req = MEREQ(headers);
 			const res = new (require('../../mock/express/response.js'))();
-			const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+			const func_authChecker = auth.middleware([0,7]);
 			func_authChecker(req, res, function(error){
 				expect(error).to.be.undefined;
 				done();
@@ -97,7 +97,7 @@ describe('lib/auth/authbyprivs', function () {
 			const headers = { 'authorization': 'Bearer ' + bad_user_jwt };
 			const req = MEREQ(headers);
 			const res = new (require('../../mock/express/response.js'))();
-			const func_authChecker = auth.generateAuthMiddleWare([0,7]);
+			const func_authChecker = auth.middleware([0,7]);
 			const response = func_authChecker(req, res, function(error_response){
 				expect(error_response._header["X-Error-Code"]).to.equal("401.13");
 				done();
