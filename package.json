@@ -2,9 +2,9 @@
   "name": "expressif",
   "version": "1.0.0",
   "description": "Opinionated RESTful web service framework built on express",
-  "main": "bootstrap.js",
+  "main": "index.js",
   "scripts": {
-    "start": "NODE_PATH=. node bootstrap.js",
+    "start": "NODE_PATH=. node index.js",
     "test": "node_modules/.bin/mocha test",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
   },
