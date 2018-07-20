@@ -1,4 +1,4 @@
 {
     "name": "router",
-    "main": "./router.js"
+    "main": "./index.js"
 }
