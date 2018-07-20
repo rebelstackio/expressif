@@ -1,4 +1,4 @@
 {
     "name": "jsonvalidator",
-    "main": "./jsonvalidator.js"
+    "main": "./index.js"
 }
