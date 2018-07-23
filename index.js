@@ -14,7 +14,7 @@ const Respond = require('./lib/respond');
 
 const Router = require('./lib/router');
 
-const Server = require('lib/server');
+const Server = require('./lib/server');
 
 module.exports = {
 	Auth, AuthByPrivs, DB, Exception, JSONValidator, Respond, ReqValidator, Router, Server
