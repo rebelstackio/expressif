@@ -16,6 +16,8 @@ const Router = require('./lib/router');
 
 const Server = require('./lib/server');
 
+const Logger = require('./lib/util').ConsoleLogger;
+
 module.exports = {
-	Auth, AuthByPrivs, DB, Exception, JSONValidator, Respond, ReqValidator, Router, Server
+	Auth, AuthByPrivs, DB, Exception, JSONValidator, Respond, ReqValidator, Router, Server, Logger
 };
