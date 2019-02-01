@@ -31,3 +31,5 @@ vagrant/files/ssh
 .env
 
 .vscode
+
+ignore
