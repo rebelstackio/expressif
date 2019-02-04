@@ -1,6 +1,6 @@
 {
 	"name": "expressif",
-	"version": "1.2.0",
+	"version": "2.2.0",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
 	"scripts": {
