@@ -1,57 +1,57 @@
 {
-  "name": "expressif",
-  "version": "1.0.0",
-  "description": "Opinionated RESTful web service framework built on express",
-  "main": "index.js",
-  "scripts": {
-    "start": "NODE_PATH=. node index.js",
-    "test": "node_modules/.bin/mocha test",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
-  },
-  "keywords": [
-    "express",
-    "services"
-  ],
-  "contributors": [
-    {
-      "name": "Rein Petersen",
-      "email": "email@reinpetersen.com",
-      "url": "https://github.com/reinsbrain"
-    },
-    {
-      "name": "Russell Ormes",
-      "email": "russell@nectarsoft.io",
-      "url": "https://github.com/russormes"
-    },
-    {
-      "name": "Javier Galarza",
-      "email": "jegj57@gmail.com",
-      "url": "https://github.com/jegj"
-    }
-  ],
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.18.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "istanbul": "^0.4.5",
-    "mocha": "^5.0.0",
-    "sinon": "^4.2.2",
-    "sinon-chai": "^2.14.0"
-  },
-  "dependencies": {
-    "ajv": "^6.1.0",
-    "app-module-path": "^2.2.0",
-    "body-parser": "^1.18.3",
-    "compression": "^1.7.2",
-    "express": "^4.16.2",
-    "jwt-simple": "^0.5.1",
-    "method-override": "^3.0.0",
-    "pg": "^7.4.3"
-  }
+	"name": "expressif",
+	"version": "2.2.0",
+	"description": "Opinionated RESTful web service framework built on express",
+	"main": "index.js",
+	"scripts": {
+		"start": "NODE_PATH=. node index.js",
+		"test": "node_modules/.bin/mocha test",
+		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
+	},
+	"keywords": [
+		"express",
+		"services"
+	],
+	"contributors": [
+		{
+			"name": "Rein Petersen",
+			"email": "email@reinpetersen.com",
+			"url": "https://github.com/reinsbrain"
+		},
+		{
+			"name": "Russell Ormes",
+			"email": "russell@nectarsoft.io",
+			"url": "https://github.com/russormes"
+		},
+		{
+			"name": "Javier Galarza",
+			"email": "jegj57@gmail.com",
+			"url": "https://github.com/jegj"
+		}
+	],
+	"license": "UNLICENSED",
+	"devDependencies": {
+		"chai": "^4.1.2",
+		"eslint": "^4.18.1",
+		"eslint-config-airbnb-base": "^12.1.0",
+		"eslint-config-standard": "^11.0.0-beta.0",
+		"eslint-plugin-import": "^2.9.0",
+		"eslint-plugin-node": "^5.2.1",
+		"eslint-plugin-promise": "^3.6.0",
+		"eslint-plugin-standard": "^3.0.1",
+		"istanbul": "^0.4.5",
+		"mocha": "^5.0.0",
+		"sinon": "^4.2.2",
+		"sinon-chai": "^2.14.0"
+	},
+	"dependencies": {
+		"ajv": "^6.1.0",
+		"app-module-path": "^2.2.0",
+		"body-parser": "^1.18.3",
+		"compression": "^1.7.2",
+		"express": "^4.16.2",
+		"jwt-simple": "^0.5.1",
+		"method-override": "^3.0.0",
+		"pg": "^7.8.0"
+	}
 }
