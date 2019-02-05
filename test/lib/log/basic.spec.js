@@ -37,6 +37,104 @@ describe.only('lib/log/basic.js',  () => {
 
 	});
 
+	describe('#error', () => {
+
+		let sandbox;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should register the log entry for error', () => {
+			const logger = new BasicLogger('ERROR');
+			const loggermock = sandbox.mock(console).expects('error').atLeast(1).withArgs('works!!', 1, 2);
+			logger.error('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should not register the log entry for lower values as warn', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('warn').atLeast(0);
+			logger.warn('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should not register the log entry for upper values as info', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('info').atLeast(0);
+			logger.info('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should not register the log entry for upper values as trace', () => {
+			const logger = new BasicLogger('WARN');
+			const lmock = sandbox.spy(console, 'log');
+			logger.trace('works!!', 1, 2);
+			expect(lmock).not.called;
+		});
+
+		it('Should not register the log entry for upper values as debug', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('debug').atLeast(0);
+			logger.debug('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+	});
+
+	describe('#warn', () => {
+
+		let sandbox;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should register the log entry for warn', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('warn').atLeast(1).withArgs('works!!', 1, 2);
+			logger.warn('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should register the log entry for lower values as error', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('error').atLeast(1).withArgs('works!!', 1, 2);
+			logger.error('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should not register the log entry for upper values as info', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('info').atLeast(0);
+			logger.info('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should not register the log entry for upper values as trace', () => {
+			const logger = new BasicLogger('WARN');
+			const lmock = sandbox.spy(console, 'log');
+			logger.trace('works!!', 1, 2);
+			expect(lmock).not.called;
+		});
+
+		it('Should not register the log entry for upper values as debug', () => {
+			const logger = new BasicLogger('WARN');
+			const loggermock = sandbox.mock(console).expects('debug').atLeast(0);
+			logger.debug('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+	});
+
 	describe('#info', () => {
 
 		let sandbox;
@@ -49,21 +147,21 @@ describe.only('lib/log/basic.js',  () => {
 			sandbox.restore();
 		});
 
-		it('Should register the log entry for info level', () => {
+		it('Should register the log entry for info', () => {
 			const logger = new BasicLogger();
 			const loggermock = sandbox.mock(console).expects('info').atLeast(1).withArgs('works!!', 1, 2);
 			logger.info('works!!', 1, 2);
 			loggermock.verify();
 		});
 
-		it('Should register the log entry for lower values as info level[1]', () => {
+		it('Should register the log entry for lower values as warn', () => {
 			const logger = new BasicLogger();
 			const loggermock = sandbox.mock(console).expects('warn').atLeast(1).withArgs('works!!', 1, 2);
 			logger.warn('works!!', 1, 2);
 			loggermock.verify();
 		});
 
-		it('Should register the log entry for lower values as info level[2]', () => {
+		it('Should register the log entry for lower values as error', () => {
 			const logger = new BasicLogger();
 			const loggermock = sandbox.mock(console).expects('error').atLeast(1).withArgs('works!!', 1, 2);
 			logger.error('works!!', 1, 2);
@@ -72,16 +170,9 @@ describe.only('lib/log/basic.js',  () => {
 
 		it('Should not register the log entry for upper values as trace', () => {
 			const logger = new BasicLogger();
-			const loggermock = sandbox.mock(console).expects('log').atLeast(0);
+			const lmock = sandbox.spy(console, 'log');
 			logger.trace('works!!', 1, 2);
-			loggermock.verify();
-		});
-
-		it('Should not register the log entry for upper values as verbose', () => {
-			const logger = new BasicLogger();
-			const loggermock = sandbox.mock(console).expects('log').atLeast(0);
-			logger.verbose('works!!', 1, 2);
-			loggermock.verify();
+			expect(lmock).not.called;
 		});
 
 		it('Should not register the log entry for upper values as debug', () => {
@@ -93,7 +184,7 @@ describe.only('lib/log/basic.js',  () => {
 
 	});
 
-	describe('#verbose', () => {
+	describe('#trace', () => {
 
 		let sandbox;
 
@@ -105,28 +196,29 @@ describe.only('lib/log/basic.js',  () => {
 			sandbox.restore();
 		});
 
-		it('Should register the log entry for verbose level', () => {
+		//FIXME: For some weird reason the mock doesnt work - has to use spies
+		it('Should register the log entry for verbose/trace', () => {
 			const logger = new BasicLogger('VERBOSE');
 			const lmock = sandbox.spy(console, 'log');
 			logger.trace('works!!', 1, 2);
-			expect(lmock).calledOnce;
+			expect(lmock).calledOnceWith('works!!', 1, 2);
 		});
 
-		it('Should register the log entry for lower values as info level[1]', () => {
+		it('Should register the log entry for lower values as warn', () => {
 			const logger = new BasicLogger('VERBOSE');
 			const loggermock = sandbox.mock(console).expects('warn').atLeast(1).withArgs('works!!', 1, 2);
 			logger.warn('works!!', 1, 2);
 			loggermock.verify();
 		});
 
-		it('Should register the log entry for lower values as info level[2]', () => {
+		it('Should register the log entry for lower values as error', () => {
 			const logger = new BasicLogger('VERBOSE');
 			const loggermock = sandbox.mock(console).expects('error').atLeast(1).withArgs('works!!', 1, 2);
 			logger.error('works!!', 1, 2);
 			loggermock.verify();
 		});
 
-		it('Should register the log entry for lower values as info level[3]', () => {
+		it('Should register the log entry for lower values as info ', () => {
 			const logger = new BasicLogger('VERBOSE');
 			const loggermock = sandbox.mock(console).expects('info').atLeast(1).withArgs('works!!', 1, 2);
 			logger.info('works!!', 1, 2);
@@ -138,6 +230,59 @@ describe.only('lib/log/basic.js',  () => {
 			const loggermock = sandbox.mock(console).expects('debug').atLeast(0);
 			logger.debug('works!!', 1, 2);
 			loggermock.verify();
+		});
+
+	});
+
+
+	describe('#debug', () => {
+
+		let sandbox;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should register the log entry for debug level', () => {
+			const logger = new BasicLogger('DEBUG');
+			const lmock = sandbox.stub(console, 'debug').callsFake(() => {
+				return true;
+			});
+			logger.debug('works!!', 1, 2);
+			expect(lmock).calledOnceWith('works!!', 1, 2);
+		});
+
+		it('Should register the log entry for lower values as warn', () => {
+			const logger = new BasicLogger('DEBUG');
+			const loggermock = sandbox.mock(console).expects('warn').atLeast(1).withArgs('works!!', 1, 2);
+			logger.warn('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should register the log entry for lower values as error', () => {
+			const logger = new BasicLogger('DEBUG');
+			const loggermock = sandbox.mock(console).expects('error').atLeast(1).withArgs('works!!', 1, 2);
+			logger.error('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		it('Should register the log entry for lower values as info ', () => {
+			const logger = new BasicLogger('DEBUG');
+			const loggermock = sandbox.mock(console).expects('info').atLeast(1).withArgs('works!!', 1, 2);
+			logger.info('works!!', 1, 2);
+			loggermock.verify();
+		});
+
+		//FIXME: For some weird reason the mock doesnt work - has to use spies
+		it('Should register the log entry for lower values as trace', () => {
+			const logger = new BasicLogger('DEBUG');
+			const lmock = sandbox.spy(console, 'log');
+			logger.trace('works!!', 1, 2);
+			expect(lmock).calledOnceWith('works!!', 1, 2);
 		});
 
 	});
