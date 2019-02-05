@@ -10,7 +10,7 @@ const sinon = require('sinon');
 
 chai.use(sinonChai);
 
-describe.only('lib/log/basic.js',  () => {
+describe('lib/log/basic.js',  () => {
 
 	describe('#constructor', () => {
 
@@ -283,6 +283,45 @@ describe.only('lib/log/basic.js',  () => {
 			const lmock = sandbox.spy(console, 'log');
 			logger.trace('works!!', 1, 2);
 			expect(lmock).calledOnceWith('works!!', 1, 2);
+		});
+
+	});
+
+	describe('#setLevel method', () => {
+
+		let sandbox;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should stop register log entries if the new level is lower than the previous one', () => {
+			const logger = new BasicLogger();
+			const loggerinfostub = sandbox.stub(console, 'info').returns(true);
+			const loggerwarnstub = sandbox.stub(console, 'warn').returns(true);
+			const loggerdebugstub = sandbox.stub(console, 'debug').returns(true);
+			logger.info('test');
+			expect(loggerinfostub).to.be.calledOnceWith('test');
+			logger.setLevel('WARN');
+			logger.info('test');
+			expect(loggerinfostub).to.be.calledOnceWith('test');
+			logger.warn('test');
+			expect(loggerwarnstub).to.be.be.calledOnceWith('test');
+			logger.setLevel('ERROR');
+			logger.warn('test');
+			expect(loggerwarnstub).to.be.be.calledOnceWith('test');
+			logger.setLevel('debug');
+			logger.debug('test1');
+			logger.debug('test2');
+			expect(loggerdebugstub).to.be.calledTwice;
+			logger.setLevel('error');
+			logger.debug('test1');
+			logger.debug('test2');
+			expect(loggerdebugstub).to.be.calledTwice;
 		});
 
 	});
