@@ -5,7 +5,7 @@ const chai = require('chai');
 const expect = chai.expect;
 const { LEVELS_ARR, LEVELS_VALUE, getLevel } = require('../../../lib/log/level');
 
-describe.only('lib/log/level.js',  () => {
+describe('lib/log/level.js',  () => {
 
 	describe('#LEVELS_ARR', () => {
 
