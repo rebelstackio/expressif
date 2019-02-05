@@ -10,7 +10,7 @@ describe('lib/log/level.js',  () => {
 	describe('#LEVELS_ARR', () => {
 
 		it('Should LEVELS_ARR has to be an array', () => {
-			expect(LEVELS_ARR).to.be.an('array').of.length(6);
+			expect(LEVELS_ARR).to.be.an('array').of.length(7);
 		});
 
 	});
@@ -23,6 +23,7 @@ describe('lib/log/level.js',  () => {
 			expect(LEVELS_VALUE).to.has.property('WARN', 1);
 			expect(LEVELS_VALUE).to.has.property('INFO', 2);
 			expect(LEVELS_VALUE).to.has.property('VERBOSE', 3);
+			expect(LEVELS_VALUE).to.has.property('TRACE', 3);
 			expect(LEVELS_VALUE).to.has.property('DEBUG', 4);
 			expect(LEVELS_VALUE).to.has.property('SILLY',5);
 		});
