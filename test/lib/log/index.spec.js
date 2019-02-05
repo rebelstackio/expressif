@@ -5,7 +5,6 @@ const chai = require('chai');
 const expect = chai.expect;
 const LoggerOptions = require('../../../lib/log');
 
-
 describe('lib/log/index.js',  () => {
 
 	describe('availables loggers', () => {
