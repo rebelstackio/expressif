@@ -1,0 +1,4 @@
+{
+	"name": "expressif-db-pg",
+	"main": "index.js"
+}
