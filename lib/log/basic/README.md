@@ -3,7 +3,7 @@
 Very simple logger based in the `console` method.
 
 
-## Gettings Started
+## Getting Started
 
 Creating a logger instance. By default the logger has a `INFO` level.
 
