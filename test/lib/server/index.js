@@ -2,18 +2,13 @@
 'use strict';
 
 const chai = require('chai');
-const should = chai.should();
 const expect = chai.expect;
-const assert = chai.assert;
-
-const MEREQ = require('../../mock/express/request.js');
-
 const Server = require('../../../lib/server');
 
 describe('lib/server/index.js', function () {
 
 	describe('$constructor', function () {
-		it('should return an instanceof Server with valid parameters', function () {
+		it.only('should return an instanceof Server with valid parameters', function () {
 			const options = {
 				"config":{
 					"case_sensitive_routing":true,
@@ -27,7 +22,7 @@ describe('lib/server/index.js', function () {
 					"method_override":true,
 					"routers":[ /* { "relpath":"routers" } */ ],
 					"templates":[
-						{ "relpath":"views", "route":"app", "renderer":"nunjucks" } 
+						{ "relpath":"views", "route":"app", "renderer":"nunjucks" }
 					]
 				}
 			};
