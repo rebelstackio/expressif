@@ -8,7 +8,7 @@ const Server = require('../../../lib/server');
 describe('lib/server/index.js', function () {
 
 	describe('$constructor', function () {
-		it.only('should return an instanceof Server with valid parameters', function () {
+		it('should return an instanceof Server with valid parameters', function () {
 			const options = {
 				"config":{
 					"case_sensitive_routing":true,
