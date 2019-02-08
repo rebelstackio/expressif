@@ -12,7 +12,7 @@ chai.use(sinonChai);
 
 describe('lib/jsonvalidator/index.js',  () => {
 
-	describe.only('#constructor', () => {
+	describe('#constructor', () => {
 		let sandbox;
 		let consSpy;
 		let errSpy;
@@ -81,6 +81,58 @@ describe('lib/jsonvalidator/index.js',  () => {
 			expect(addSpy).to.be.called;
 		});
 
+	});
+
+	describe('#addSchema', () => {
+		let sandbox;
+		let consSpy;
+		let errSpy;
+		let addSpy;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+			consSpy = sandbox.spy();
+			addSpy = sandbox.spy();
+			errSpy = sandbox.spy();
+			JsonValidator = proxyquire('../../../lib/jsonvalidator', {
+				'ajv': class {
+					constructor(){
+						consSpy();
+					}
+					addSchema(a, i){
+						addSpy(a, i);
+					}
+				},
+				'ajv-errors': errSpy
+			});
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should call the AJV addSchema method with an array if the argument is an array', () => {
+			const jv = new JsonValidator();
+			jv.addSchema([{id:1}]);
+			expect(addSpy).to.be.calledOnceWith([{id:1}]);
+		});
+
+		it('Should call the AJV addSchema method with an string and a key if the argument is as tring and there is also another argument', () => {
+			const jv = new JsonValidator();
+			const str = '{"a":1}'
+			const strpar = JSON.parse(str);
+			const key = 1;
+			jv.addSchema(str, key);
+			expect(addSpy).to.be.calledOnceWith(strpar, key);
+		});
+
+		it('Should call the AJV addSchema method with an an object', () => {
+			const jv = new JsonValidator();
+			const str = '{"a":1}'
+			const strpar = JSON.parse(str);
+			jv.addSchema(strpar);
+			expect(addSpy).to.be.calledOnceWith(strpar);
+		});
 
 	});
 
