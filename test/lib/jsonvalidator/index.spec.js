@@ -6,6 +6,7 @@ const sinonChai = require('sinon-chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const expect = chai.expect;
+const AJV = require('ajv');
 
 let JsonValidator;
 chai.use(sinonChai);
@@ -132,6 +133,75 @@ describe('lib/jsonvalidator/index.js',  () => {
 			const strpar = JSON.parse(str);
 			jv.addSchema(strpar);
 			expect(addSpy).to.be.calledOnceWith(strpar);
+		});
+
+		it('Should throw an exception if the schemas argument is not a valid type for the method', () => {
+			const jv = new JsonValidator();
+			expect(() => {
+				jv.addSchema(true);
+			}).to.throw(TypeError);
+		});
+
+	});
+
+	describe('#validateInput', () => {
+		let sandbox;
+		let errSpy;
+
+		beforeEach(()=> {
+			sandbox = sinon.createSandbox();
+			errSpy = sandbox.spy();
+			sandbox.stub(AJV.prototype, 'getSchema').callsFake((schema) => {
+				if ( schema == 'test1') {
+					return function() { return true; }
+				} else {
+					return function() { return false; }
+				}
+			});
+			sandbox.stub(AJV.prototype, 'compile').callsFake((schema) => {
+				return function() { return true; }
+			});
+			sandbox.stub(AJV.prototype, 'addSchema').returns(true);
+
+			JsonValidator = proxyquire('../../../lib/jsonvalidator', {
+				'ajv-errors': errSpy
+			});
+		});
+
+		afterEach(() => {
+			sandbox.restore();
+		});
+
+		it('Should call the ajv getSchema method and return a true if the schema validate withouts error the body', () => {
+			const jv = new JsonValidator();
+			const str = '{"a":1}';
+			jv.addSchema(str, 'test1');
+			const r = jv.validateInput('test1', {});
+			expect(r).to.be.true;
+		});
+
+		it('Should call the ajv compile method and return a true if the schema validate withouts error the body', () => {
+			const jv = new JsonValidator();
+			const str = {"a":1};
+			const r = jv.validateInput(str, {});
+			expect(r).to.be.true;
+		});
+
+		it('Should return the validation function if the schemas rejects the body', () => {
+			const jv = new JsonValidator();
+			const str = '{"a":1}';
+			jv.addSchema(str, 'test2');
+			const r = jv.validateInput('test2', {});
+			expect(r).to.be.instanceOf(Function);
+		});
+
+		it('Should throw an exception if the schema is not a valid argument(string or obejct)', () => {
+			const jv = new JsonValidator();
+			const str = '{"a":1}';
+			jv.addSchema(str, 'test2');
+			expect(() => {
+				const r = jv.validateInput(true, {});
+			}).to.throw(TypeError);
 		});
 
 	});
