@@ -8,98 +8,88 @@ const proxyquire = require('proxyquire');
 const expect = chai.expect;
 chai.use(sinonChai);
 const Errors = require('lib/error');
+const ErrorTypes = require('lib/error/types');
+const ErrorHttpCodes= require('lib/error/httpcodes');
 
 describe.only('lib/error/index.js',  () => {
 
-	describe('#ExpressifError', () => {
-		let ExpressifError;
+	describe('#AppError', () => {
+		let AppError;
 
 		beforeEach(() => {
-			ExpressifError = Errors.ExpressifError;
+			AppError = Errors.AppError;
 		});
 
-		it('Should the ExpressifError be available in the lib/error module', () => {
-			expect(Errors).to.has.property('ExpressifError');
+		it('Should the AppError be available in the lib/error module', () => {
+			expect(Errors).to.has.property('AppError');
 		});
 
-		it('Should ExpressifError be an abstract class an avoid create instances', () => {
-			expect(() => {
-				const nerror = new ExpressifError();
-			}).to.throw(TypeError);
+		it('Should AppError object be an instance of Error', () => {
+			const err = new AppError(null, null, 'sample error');
+			expect(err).to.be.instanceOf(Error);
 		});
 
-	});
-
-	describe('#ServerError', () => {
-		let ServerError, ExpressifError;
-
-		beforeEach(() => {
-			ServerError = Errors.ServerError;
-			ExpressifError = Errors.ExpressifError;
+		it('Should AppError has the property message', () => {
+			const msg = 'sample error';
+			const err = new AppError(ErrorTypes.serverError, ErrorHttpCodes.serverError, msg);
+			expect(err).to.has.property('message', msg);
 		});
 
-		it('Should the ServerError be available in the lib/error module', () => {
-			expect(Errors).to.has.property('ServerError');
+		it('Should AppError has the type property by default as Server Error', () => {
+			const msg = 'sample error';
+			const err = new AppError(null, null, msg);
+			expect(err).to.has.property('type', ErrorTypes.serverError);
 		});
 
-		it('Should ServerError be a instance of Error and ExpressifError', () => {
-			const nerror = new ServerError();
-			expect(nerror).be.instanceOf(ExpressifError);
-			expect(nerror).be.instanceOf(Error);
+		it('Should be possible to set the type property in an AppError', () => {
+			const msg = 'sample error';
+			const err = new AppError(ErrorTypes.badRequest, null, msg);
+			expect(err).to.has.property('type', ErrorTypes.badRequest);
 		});
 
-		it('Should ServerError has a name property with the same value as the Constructor Name', () => {
-			const nerror = new ServerError();
-			expect(nerror).to.has.property('name', 'ServerError');
+		it('Should AppError has the httpstatus property by default as Server Error(500)', () => {
+			const msg = 'sample error';
+			const err = new AppError(null, null, msg);
+			expect(err).to.has.property('httpstatus', ErrorHttpCodes.serverError);
 		});
 
-		it('Should ServerError has a message as 1st argument', () => {
-			const msg = 'error message';
-			const nerror = new ServerError(msg);
-			expect(nerror).to.has.property('message', msg);
+		it('Should be possible to set the httpstatus property in an AppError', () => {
+			const msg = 'sample error';
+			const err = new AppError(null, ErrorHttpCodes.badRequest, msg);
+			expect(err).to.has.property('httpstatus', ErrorHttpCodes.badRequest);
 		});
 
-		it('Should ServerError set a default value(empty string) for the message argument', () => {
-			const error =	new ServerError();
-			expect(error.message).to.be.empty;
+		it('Should AppError has a errorObject property by defaul as an empty object', () => {
+			const msg = 'sample error';
+			const error = new AppError(ErrorTypes.badRequest, ErrorHttpCodes.serverError, msg );
+			expect(error).to.has.property('errorObject');
+			expect(error.errorObject).to.be.deep.equal({});
 		});
 
-		it('Should ServerError has a default httpstatus value of 500(server error)', () => {
-			const msg = 'error message';
-			const nerror = new ServerError(msg);
-			expect(nerror).to.has.property('httpstatus', 500);
+		it('Should be possible to set an errorObject( error from another source) in the options argument', () => {
+			const msg = 'sample error';
+			const err = new Error('error');
+			const error = new AppError(ErrorTypes.badRequest, ErrorHttpCodes.serverError, msg, { errorObject: err } );
+			expect(error).to.has.property('errorObject');
+			expect(error.errorObject).to.be.deep.equal(err);
 		});
 
-		it('Should ServerError set a new value of httpstatus overwriting the default value if the property httpstatus is set in the options argument', () => {
-			const msg = 'error message';
-			const nerror = new ServerError(msg, { httpstatus: 404 });
-			expect(nerror).to.has.property('httpstatus', 404);
+		it('Should be possible to set aditional relevant properties in the options argument', () => {
+			const msg = 'sample error';
+			const err = new Error('error');
+			const options = { errorObject: err, important: true, access: true };
+			const error = new AppError(ErrorTypes.badRequest, ErrorHttpCodes.serverError, msg, options );
+			delete options.errorObject;
+			expect(error).to.has.property('props');
+			expect(error.props).to.be.deep.equal(options);
 		});
 
-		it('Should ServerError has a errorObject as empty object by default', () => {
-			const msg = 'error message';
-			const nerror = new ServerError(msg);
-			expect(nerror).to.has.property('errorObject');
-			expect(nerror.errorObject).to.be.deep.equal({});
-		});
-
-		it('Should ServerError set a errorObject if the property errorObject is set in the options argument', () => {
-			const sourceerror = { error: true, origin: 'not'};
-			const nerror = new ServerError('custom error', { errorObject: sourceerror });
-			expect(nerror.errorObject).to.be.deep.equal(sourceerror);
-		});
-
-		it('Should ServerError set a params aditional property if the options argument has extre properties not required by the constructor',  () => {
-			const options = { error: true, origin: 'not', errorObject: { source: true}};
-			const nerror = new ServerError('custom error', options);
-			const { errorObject, ...props } = options;
-			expect(nerror.props).to.be.deep.equal(props);
-		});
-
-		it('Should ServerError display a string when it printed in console or by a log class', () => {
-			const nerror = new ServerError('custom error');
-			expect(nerror.toString()).to.be.not.empty;
-			expect(nerror.toString()).to.contain(`[500]custom error`);
+		it('Should an AppError display a string message when it is represented as string', () => {
+			const msg = 'sample error';
+			const err = new Error('error');
+			const options = { errorObject: err, important: true, access: true };
+			const error = new AppError(ErrorTypes.badRequest, ErrorHttpCodes.badRequest, msg, options );
+			expect(error.toString()).to.be.equal(`[${ErrorTypes.badRequest}|${ErrorHttpCodes.badRequest}] ${msg}`);
 		});
 
 	});
