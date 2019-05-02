@@ -6,6 +6,7 @@
 	"scripts": {
 		"start": "NODE_PATH=. node index.js",
 		"test": "node_modules/.bin/mocha test",
+		"publish": "npm publish --access=public",
 		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
 	},
 	"keywords": [
