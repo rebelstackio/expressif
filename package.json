@@ -1,5 +1,5 @@
 {
-	"name": "expressif",
+	"name": "@rebelstack-io/expressif",
 	"version": "2.2.0-beta",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
