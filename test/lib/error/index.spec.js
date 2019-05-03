@@ -92,6 +92,53 @@ describe.only('lib/error/index.js',  () => {
 			expect(error.toString()).to.be.equal(`[${ErrorTypes.badRequest}|${ErrorHttpCodes.badRequest}] ${msg}`);
 		});
 
+		it('Should an ExpError has additional Headers property(adheaders) as empty object by default', () => {
+			const msg = 'sample error';
+			const error = new ExpError(ErrorTypes.badRequest, ErrorHttpCodes.badRequest, msg, );
+			expect(error).to.has.property('adheaders');
+			expect(error.adheaders).to.be.empty;
+		});
+
+		it('Should an ExpError set any additional Headers property(adheaders) and overwrite the default value', () => {
+			const newadheaders = {
+				'X-Error-Code': 501.12,
+			};
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'sample error',
+				{
+					adheaders : newadheaders
+				}
+			);
+			expect(error).to.has.property('adheaders');
+			expect(error.adheaders).to.be.deep.equal(newadheaders);
+		});
+
+		it('Should an ExpError has the property hasAdditionalHeaders as false if the adheader property is empty', () => {
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'sample error'
+			);
+			expect(error).to.has.property('hasAdditionalHeaders', false);
+		});
+
+		it('Should an ExpError has the property hasAdditionalHeaders as true if the adheader property is not empty', () => {
+			const newadheaders = {
+				'X-Error-Code': 501.12,
+			};
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'sample error',
+				{
+					adheaders : newadheaders
+				}
+			);
+			expect(error).to.has.property('hasAdditionalHeaders', true);
+		});
+
 	});
 
 });
