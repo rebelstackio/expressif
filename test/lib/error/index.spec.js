@@ -3,15 +3,13 @@
 
 const chai = require('chai');
 const sinonChai = require('sinon-chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
 const expect = chai.expect;
 chai.use(sinonChai);
 const Errors = require('lib/error');
 const ErrorTypes = require('lib/error/types');
 const ErrorHttpCodes= require('lib/error/httpcodes');
 
-describe.only('lib/error/index.js',  () => {
+describe('lib/error/index.js',  () => {
 
 	describe('#ExpError', () => {
 		let ExpError;
