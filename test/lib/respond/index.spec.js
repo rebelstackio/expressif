@@ -30,7 +30,7 @@ describe('lib/respond/index.js', function () {
 		);
 	});
 
-	describe('#wrapSuccessData', () => {
+	describe.skip('#wrapSuccessData', () => {
 		let wrapSuccessData;
 		before(()=>{
 			wrapSuccessData = RESPOND.wrapSuccessData;
