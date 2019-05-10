@@ -4,8 +4,6 @@ const { Auth, AuthByPrivs } = require('./lib/auth');
 
 const DB = require('./lib/db/pg');
 
-const { ExpError, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/error');
-
 const Exception = require('./lib/exception');
 
 const JSONValidator = require('./lib/jsonvalidator');
@@ -30,8 +28,5 @@ module.exports = {
 	ReqValidator,
 	Router,
 	Server,
-	BasicLogger,
-	ExpError,
-	EXPRESSIF_HTTP_CODES,
-	EXPRESSIF_HTTP_TYPES
+	BasicLogger
 };
