@@ -9,7 +9,7 @@ const ExpressifObject = require('lib/expobject');
 const ErrorTypes = ExpressifObject.EXPRESSIF_HTTP_TYPES;
 const ErrorHttpCodes= ExpressifObject.EXPRESSIF_HTTP_CODES;
 
-describe('lib/expobject/index.js',  () => {
+describe('lib/expobject/error/index.js',  () => {
 
 	describe('#ExpError', () => {
 		let ExpError;
