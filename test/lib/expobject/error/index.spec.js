@@ -52,11 +52,11 @@ describe('lib/expobject/index.js',  () => {
 			expect(err).to.has.property('httpstatus', ErrorHttpCodes.badRequest);
 		});
 
-		it('Should ExpError has a errorObject property by defaul as an empty object', () => {
+		it('Should ExpError has a errorObject property by default is udnefined', () => {
 			const msg = 'sample error';
 			const error = new ExpError(ErrorTypes.badRequest, ErrorHttpCodes.serverError, msg );
 			expect(error).to.has.property('errorObject');
-			expect(error.errorObject).to.be.deep.equal({});
+			expect(error.errorObject).to.be.undefined;
 		});
 
 		it('Should be possible to set an errorObject( error from another source) in the options argument', () => {
@@ -74,7 +74,8 @@ describe('lib/expobject/index.js',  () => {
 			const error = new ExpError(ErrorTypes.badRequest, ErrorHttpCodes.serverError, msg, options );
 			delete options.errorObject;
 			expect(error).to.has.property('props');
-			expect(error.props).to.be.deep.equal(options);
+			expect(error.props).to.be.deep.equal({ important: true, access: true });
+			expect(error.errorObject).to.be.equal(err);
 		});
 
 		it('Should an ExpError display a string message when it is represented as string', () => {
