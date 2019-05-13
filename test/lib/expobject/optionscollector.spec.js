@@ -15,7 +15,7 @@ describe('lib/expobject/optionscollector',  () => {
 		it('Should return the same object if the sources keys are empty', () => {
 			const options = { test: true, test2: 0, test3: 2 };
 			const result = optionsCollector(options, []);
-			expect(result).to.be.deep.equal(options);
+			expect(result).to.be.deep.equal(Object.assign({}, options, { props: {} }));
 		});
 
 		it('Should collect properties and values from a source object based on source( collections of keys for collect )', () => {
