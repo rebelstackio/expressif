@@ -1,6 +1,6 @@
 # ExpError
 
-Basic Common Error Object for REST verbs and custom errors. Allow to build REST common error based on http status code and the name(e.g  `404-NotFound`), also can build custom error not related with REST allowing the user expand the class and add no-common `properties` in a HTTP error. 
+Basic Common Error Object for REST verbs and custom errors. Allow to build REST common error based on http status code and the name(e.g  `404-NotFound`), also can build custom error not related with REST allowing the user expand the class and add no-common `properties` as additional properties. 
 
 
 The main goal of this class is to used only one generic Error in the entire project avoiding to deal with multiple classes with similars behaviors
