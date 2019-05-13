@@ -8,7 +8,7 @@ chai.use(sinonChai);
 const optionsCollector = require('lib/expobject/optionscollector');
 
 
-describe.only('lib/expobject/optionscollector',  () => {
+describe('lib/expobject/optionscollector',  () => {
 
 	describe('#optionsCollector', () => {
 
@@ -39,6 +39,31 @@ describe.only('lib/expobject/optionscollector',  () => {
 				test: true,
 				test2: 0
 			});
+		});
+
+		it('Should use the values expose in the file lib/expobject/options.json as source and collect them', () => {
+			const errorObject = { test: true };
+			const adheaders = { header1: true, header2: true };
+			const options = { test: true, test2: 0, test3: 2 , 	errorObject, adheaders };
+			const result = optionsCollector(options);
+			expect(result).to.has.property('errorObject');
+			expect(result.errorObject).to.be.deep.equal(errorObject);
+			expect(result).to.has.property('adheaders');
+			expect(result.adheaders).to.be.deep.equal(adheaders);
+			expect(result).to.has.property('props');
+			expect(result.props).to.has.property('test', true);
+			expect(result.props).to.has.property('test2', 0);
+			expect(result.props).to.has.property('test3', 2);
+		});
+
+		it('Should set empty/undefined values for the target keys for collection ', () => {
+			const targetkey = [ "test100" ];
+			const options = { test: true, test2: 0, test3: 2 };
+			const { test100, props } = optionsCollector(options, targetkey);
+			expect(test100).to.be.undefined;
+			expect(props).to.has.property('test', true);
+			expect(props).to.has.property('test2', 0);
+			expect(props).to.has.property('test3', 2);
 		});
 
 	});
