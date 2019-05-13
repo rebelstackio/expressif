@@ -28,6 +28,12 @@ describe('lib/expobject/index.js',  () => {
 			expect(err).to.has.property('message', msg);
 		});
 
+		it('Should ExpError has the stack property inherent from Error object', () => {
+			const msg = 'sample error';
+			const err = new ExpError(ErrorTypes.serverError, ErrorHttpCodes.serverError, msg);
+			expect(err).to.has.property('stack');
+		});
+
 		it('Should ExpError has the type property by default as Server Error', () => {
 			const msg = 'sample error';
 			const err = new ExpError(null, null, msg);
@@ -131,6 +137,74 @@ describe('lib/expobject/index.js',  () => {
 				}
 			);
 			expect(error).to.has.property('hasAdditionalHeaders', true);
+		});
+
+		it('Should the json method return a object with the message representing the response for HTTP request', () => {
+			const msg = 'Invalid options for your action';
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				msg
+			);
+			const response = error.json();
+			expect(response).to.has.property('message', msg);
+		});
+
+		it('Should the json method return a object with the httpstatus representing the response for HTTP request', () => {
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'Invalid options for your action'
+			);
+			const response = error.json();
+			expect(response).to.has.property('httpstatus', ErrorHttpCodes.badRequest);
+		});
+
+		it('Should the json method return a object with the type representing the response for HTTP request', () => {
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'Invalid options for your action'
+			);
+			const response = error.json();
+			expect(response).to.has.property('type', 	ErrorTypes.badRequest);
+		});
+
+		it('Should the json method return a object with the props property representing the response for HTTP request with custom data provided by the developer', () => {
+			const options = { important: true, access: true };
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'Invalid options for your action',
+				options
+			);
+			const response = error.json();
+			expect(response).to.has.property('props');
+			// Seems the ExpError constructor(options collector destroy the object)
+			expect(response.props).to.be.deep.equal(options);
+		});
+
+		it('Should avoid set the originerror(errorobject) by default', () => {
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'Invalid options for your action'
+			);
+			const response = error.json();
+			expect(response).to.not.has.property('errorobject');
+		});
+
+		it('Should set the originerror(errorobject) if the argument is set as true', () => {
+			const err = new Error('error');
+			const options = { errorObject: err, important: true, access: true };
+			const error = new ExpError(
+				ErrorTypes.badRequest,
+				ErrorHttpCodes.badRequest,
+				'Invalid options for your action',
+				options
+			);
+			const response = error.json(true);
+			expect(response).to.has.property('errorobject');
 		});
 
 	});
