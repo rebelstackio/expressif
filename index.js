@@ -16,6 +16,8 @@ const Router = require('./lib/router');
 
 const Server = require('./lib/server');
 
+const {	ExpError, ExpData, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/expobject');
+
 const { BasicLogger } = require('./lib/log');
 
 module.exports = {
@@ -28,5 +30,9 @@ module.exports = {
 	ReqValidator,
 	Router,
 	Server,
-	BasicLogger
+	BasicLogger,
+	ExpError,
+	ExpData,
+	EXPRESSIF_HTTP_CODES,
+	EXPRESSIF_HTTP_TYPES
 };
