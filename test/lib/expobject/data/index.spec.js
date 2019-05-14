@@ -9,7 +9,7 @@ const ExpressifObject = require('lib/expobject');
 const HttpTypes = ExpressifObject.EXPRESSIF_HTTP_TYPES;
 const HttpCodes= ExpressifObject.EXPRESSIF_HTTP_CODES;
 
-describe.only('lib/expobject/data/index.js',  () => {
+describe('lib/expobject/data/index.js',  () => {
 
 	describe('#ExpData', () => {
 		let ExpData;
@@ -54,6 +54,38 @@ describe.only('lib/expobject/data/index.js',  () => {
 		it('Should be possible to set the httpstatus property based on the httpstatus', () => {
 			const response = new ExpData(HttpTypes.noContent, HttpCodes.noContent);
 			expect(response).to.has.property('httpstatus', HttpCodes.noContent);
+		});
+
+		it('Should be possible to set the httpstatus property based on random code', () => {
+			const response = new ExpData(HttpTypes.noContent, 400.11);
+			expect(response).to.has.property('httpstatus', 400.11);
+		});
+
+		it('Should set the props property with custom properties', () => {
+			const props = { a:1 , b:2, c:3 };
+			const response = new ExpData(HttpTypes.noContent, 400.11, {}, props);
+			expect(response).to.has.property('props');
+			expect(response.props).to.be.deep.equal(props);
+		});
+
+		it('Should set the props property with custom properties and the adheaders', () => {
+			const props = { a:1 , b:2, c:3, adheaders: { header1: 1, header2: 2} };
+			const response = new ExpData(HttpTypes.noContent, 400.11, {}, props);
+			expect(response).to.has.property('props');
+			expect(response.props).to.be.deep.equal({ a:1 , b:2, c:3 });
+			expect(response.adheaders).to.be.deep.equal(props.adheaders);
+		});
+
+		it('Should hasAdditionalHeaders return true when the adheaders option is valid', () => {
+			const props = { a:1 , b:2, c:3, adheaders: { header1: 1, header2: 2} };
+			const response = new ExpData(HttpTypes.noContent, 400.11, {}, props);
+			expect(response.hasAdditionalHeaders).to.be.true;
+		});
+
+		it('Should hasAdditionalHeaders return false when the are not adheader in the options object', () => {
+			const props = { a:1 , b:2, c:3 };
+			const response = new ExpData(HttpTypes.noContent, 400.11, {}, props);
+			expect(response.hasAdditionalHeaders).to.be.false;
 		});
 
 	});
