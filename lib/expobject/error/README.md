@@ -16,7 +16,7 @@ const error = new ExpError(
 	EXPRESSIF_HTTP_TYPES.serverError,  // ServerError label
 	EXPRESSIF_HTTP_CODES.serverError,  // 500
 	`Some error message`, // Custom message
-	{ additionalProperty: 'here', errorObject: errorFromAnotherSource} // Any additional properties that you want in your error
+	{ additionalProperty: 'here', errorObject: errorFromAnotherSource} // Any additional properties that you want in your error object
 )
 ```
 
@@ -27,7 +27,54 @@ const { ExpError } = require('@rebelstack-io/expressif');
 
 const error = new ExpError(
 	`CacheError`,
-	500,
+	500.11,
 	`Key not found in cache`,
 )
+```
+
+## Methods
+
+- `json(includeOrgError<boolean>=false)`
+
+	Return a JSON representation of the error to be simple and common to the client. The `includeOrgError` argument allows to set an `errorobject` property in the representation. Additional headers will come in the HTTP Response headers so it is not required to set a flag to expose them
+
+```javascript
+const error = new ExpError(
+	`CacheError`,
+	500.11,
+	`Key not found in cache`,
+	{
+		adheaders: {
+			'X-Error-Code': 500
+		},
+		errorObject : {
+			origin: 'cache',
+			message: 'Key not found'
+		}
+	}
+);
+
+error.json();
+/*
+{ 
+	"message": "Key not found in cache",
+	"httpstatus": 	500.11,
+	"type": "CacheError"
+	"props": {}
+}
+*/
+
+error.json(true);
+/*
+{ 
+	"message": "Key not found in cache",
+	"httpstatus": 	500.11,
+	"type": "CacheError"
+	"props": {},
+	errorobject: {
+		origin: 'cache',
+		message: 'Key not found'
+	}
+}
+*/
 ```
