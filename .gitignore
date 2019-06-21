@@ -25,9 +25,11 @@ node_modules
 vagrant/tmp
 vagrant/files/ssh
 # ignore vagrant entirely
-vagrant
+# vagrant
 
 # don't include .env!!!!
 .env
 
 .vscode
+
+ignore

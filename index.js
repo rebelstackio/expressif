@@ -16,8 +16,23 @@ const Router = require('./lib/router');
 
 const Server = require('./lib/server');
 
-const Logger = require('./lib/util').ConsoleLogger;
+const {	ExpError, ExpData, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/expobject');
+
+const { BasicLogger } = require('./lib/log');
 
 module.exports = {
-	Auth, AuthByPrivs, DB, Exception, JSONValidator, Respond, ReqValidator, Router, Server, Logger
+	Auth,
+	AuthByPrivs,
+	DB,
+	Exception,
+	JSONValidator,
+	Respond,
+	ReqValidator,
+	Router,
+	Server,
+	BasicLogger,
+	ExpError,
+	ExpData,
+	EXPRESSIF_HTTP_CODES,
+	EXPRESSIF_HTTP_TYPES
 };
