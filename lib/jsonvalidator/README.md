@@ -23,6 +23,7 @@ __NOTE:__ The schemas should be sorted to void problems with the ```$ref``` stam
 {
 	allErrors: true, // Display all the errors instead of just stop the validation at the first error
 	meta: require('ajv/lib/refs/json-schema-draft-06.json') // Default meta schema for all the custom schemas
+	keepErrors: false // Do not put the original error messages in the response object and use the new error messages specified by ajv-errors
 }
 ```
 
@@ -65,3 +66,86 @@ const routes = [
 ];
 const router = new Router({}, expressifauth, expressifjv);
 ```
+
+### JSONValidator Middlewares
+
+__NOTE__ **Breaking Change**
+
+Since version `3.x` or higher the JSONValidator middleware can validate the `req.query` and `req.params` properties. The schema **needs to follow** a combination of this template:
+
+```json
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+	"properties": {
+		"body": {
+			// Validate the req.body
+		},
+		"params": {
+			// Validate the req.params
+		},
+		"query": {
+			// Validate the req.query
+		}
+	},
+	"required": [ "body" ],
+	"additionalProperties": false
+}
+```
+
+__NOTE__ By combination means: `POST` requests does not have a `query` property so it can be removed from the schema.
+
+__NOTE__ `req.query` and `req.params` are objects and their properties are always `strings` so be carefull with the conditions. Usually a `regex` will help with a complex condition
+
+
+#### Sample Schema
+
+```
+GET /v1/test/:id/fake/:id2?test=[enum1|enum2]
+```
+
+```json
+{
+	"title": "schema test 1",
+	"$schema": "http://json-schema.org/draft-06/schema#",
+	"$id": "test2",
+	"properties": {
+		"params": {
+			"type": "object",
+			"properties": {
+				"id":{
+					"type": "string",
+					"pattern": "^[1-9]\\d*$" // Use a regex for a custom validation
+				},
+				"id2":{
+					"type": "string",
+					"pattern": "^[1-9]\\d*$" // Use a regex for a custom validation
+				}
+			},
+			"required": ["id", "id2"],
+			"errorMessage": {
+				"properties": {
+					"id":  "Id1 should be a valid integer",
+					"id2": "Id2 should be a valid integer"
+				}
+			}
+		},
+		"query": {
+			"type": "object",
+			"properties": {
+				"test": {
+					"type": "string",
+					"enum": ["enum1", "enum2"]
+				}
+			},
+			"errorMessage": {
+				"properties": {
+					"test":  "Should be equal to [enum1, enum2] only"
+				}
+			}
+		}
+	},
+	"required": [ "params" ] // This is always required based on the GET request format
+}
+```
+
+In the case of `id1` and `id2` is not possible to set up a `integer` validation so the solution is to use a regex. In future releases this problem may be solved. The `query` property is optional so it is not required but the params must be present always

@@ -1,0 +1,16 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+	"properties": {
+		"body": {
+
+		},
+		"params": {
+
+		},
+		"query": {
+
+		}
+	},
+	"required": [ "body" ],
+	"additionalProperties": false
+}
