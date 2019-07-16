@@ -189,6 +189,10 @@ cd /home/vagrant/expressif
 
 npm install
 
+# Install travis
+apt install -y ruby ruby-dev
+gem install travis
+
 # Tag the provision time:
 date > "$PROVISIONED_ON"
 
