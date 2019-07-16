@@ -4,22 +4,16 @@ language: node_js
 git:
   submodules: false
 node_js:
-	- "9"
+- "9"
 before_install:
 - npm update -g npm
 install:
 - npm install
-
-jobs:
-  include:
-    - stage: npm release
-      if: tag IS present
-      node_js: "9"
-      deploy:
-        provider: npm
-        email: "jegj57@gmail.com"
-  			api_key:
-    			secure: qMam+Vq+LrDJ9VpMNyC/u/brTz0GHzE0aTV8ivhrEtdjcAwIzpvZvl/ui1GrIm2d7p8mELz/sQg+djOY2L2cpD3Ns0zJnJsl1O2E6WiSCClXfXIZXKd8tie0YQVn6tRwcOtGWEROuXtfwZaCJ8d0nkDMGvrJw8AtGryvuTkzR/Qin7VIibOlK66QyIGxNPR5s+6PSyQ/IbwDMCNebrJ/QnyuxOuivQ4fn90WOnRSN+XLG6ogKbdybkdKEpHoBPrdoyR5n7mxdupqtnCHaxfqhfOk15nM4F0CJ2dCfuuqg8/EPxno5D6H/XDLkKD42Zl4LBqHaoxdm3OFXwBlx58e1Z18l8tnf1cEv30jGICGoeJS9OI7BIB2KXnoeQpScb0zR+E9W9M4CFjwH5wMj/qTZ6cSd18kAhBDAN8tdqNm2dlYjKCl2pc6do0QGGZ3U9T9/yoPJtg/sq2nZx5kR3tDd4OSnqNmKhPeoAX5nHo3sG9+XeB6gHVYGbaQG0oEVlZ3D4Zvxb7tg5o5WR+6dxcC6Ount6WlkGo/wWYi0692tQSJODauPEDVURmz9cWwOsOD2GsnCDM6uM99g+RNlm1zKlnzq3OLTgMkWzm9TuMq10vo/hm2BZAs+GpZNQ7tDlN+jHfhOZWapzzz23YkjITF2mSbV5o/hLplA2hvLQerMTY=
-        skip_cleanup: true
-        on:
-          tags: true
+deploy:
+  provider: npm
+  email: "jegj57@gmail.com"
+  api_key:
+    secure: qMam+Vq+LrDJ9VpMNyC/u/brTz0GHzE0aTV8ivhrEtdjcAwIzpvZvl/ui1GrIm2d7p8mELz/sQg+djOY2L2cpD3Ns0zJnJsl1O2E6WiSCClXfXIZXKd8tie0YQVn6tRwcOtGWEROuXtfwZaCJ8d0nkDMGvrJw8AtGryvuTkzR/Qin7VIibOlK66QyIGxNPR5s+6PSyQ/IbwDMCNebrJ/QnyuxOuivQ4fn90WOnRSN+XLG6ogKbdybkdKEpHoBPrdoyR5n7mxdupqtnCHaxfqhfOk15nM4F0CJ2dCfuuqg8/EPxno5D6H/XDLkKD42Zl4LBqHaoxdm3OFXwBlx58e1Z18l8tnf1cEv30jGICGoeJS9OI7BIB2KXnoeQpScb0zR+E9W9M4CFjwH5wMj/qTZ6cSd18kAhBDAN8tdqNm2dlYjKCl2pc6do0QGGZ3U9T9/yoPJtg/sq2nZx5kR3tDd4OSnqNmKhPeoAX5nHo3sG9+XeB6gHVYGbaQG0oEVlZ3D4Zvxb7tg5o5WR+6dxcC6Ount6WlkGo/wWYi0692tQSJODauPEDVURmz9cWwOsOD2GsnCDM6uM99g+RNlm1zKlnzq3OLTgMkWzm9TuMq10vo/hm2BZAs+GpZNQ7tDlN+jHfhOZWapzzz23YkjITF2mSbV5o/hLplA2hvLQerMTY=
+  skip_cleanup: true
+  on:
+    tags: true
