@@ -1,6 +1,6 @@
 {
 	"name": "@rebelstack-io/expressif",
-	"version": "3.0.1-beta",
+	"version": "3.1.2-beta",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
 	"scripts": {
@@ -8,6 +8,10 @@
 		"test": "node_modules/.bin/mocha test",
 		"publish": "npm publish --access=public",
 		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rebelstackio/expressif.git"
 	},
 	"keywords": [
 		"express",
