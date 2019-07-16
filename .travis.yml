@@ -3,7 +3,8 @@ sudo: true
 language: node_js
 branches:
   only:
-  - develop
+		- develop
+		- staging
 git:
   submodules: false
 node_js:
