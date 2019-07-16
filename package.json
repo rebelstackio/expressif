@@ -1,6 +1,6 @@
 {
 	"name": "@rebelstack-io/expressif",
-	"version": "3.2.3-beta",
+	"version": "3.3.0",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
 	"scripts": {
