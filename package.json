@@ -1,12 +1,12 @@
 {
 	"name": "@rebelstack-io/expressif",
-	"version": "3.1.2-beta",
+	"version": "3.1.3-beta",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
 	"scripts": {
 		"start": "NODE_PATH=. node index.js",
 		"test": "node_modules/.bin/mocha test",
-		"publish": "npm publish --access=public",
+		"deploy": "npm publish --access=public",
 		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
 	},
 	"repository": {
