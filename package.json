@@ -51,7 +51,7 @@
 		"sinon-chai": "^3.3.0"
 	},
 	"dependencies": {
-		"ajv": "^6.8.1",
+		"ajv": "^6.10.2",
 		"ajv-errors": "^1.0.1",
 		"app-module-path": "^2.2.0",
 		"body-parser": "^1.18.3",
