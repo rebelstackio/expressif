@@ -1,6 +1,6 @@
 /* index.js */
 
-const { Auth, AuthByPrivs } = require('./lib/auth');
+const { Auth, AuthByPrivs, AuthByRoles } = require('./lib/auth');
 
 const DB = require('./lib/db/pg');
 
@@ -23,6 +23,7 @@ const { BasicLogger } = require('./lib/log');
 module.exports = {
 	Auth,
 	AuthByPrivs,
+	AuthByRoles,
 	DB,
 	Exception,
 	JSONValidator,
