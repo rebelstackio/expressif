@@ -14,6 +14,8 @@ const Respond = require('./lib/respond');
 
 const Router = require('./lib/router');
 
+const RouterV2 = require('./lib/router/v2');
+
 const Server = require('./lib/server');
 
 const {	ExpError, ExpData, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/expobject');
@@ -30,6 +32,7 @@ module.exports = {
 	Respond,
 	ReqValidator,
 	Router,
+	RouterV2,
 	Server,
 	BasicLogger,
 	ExpError,
