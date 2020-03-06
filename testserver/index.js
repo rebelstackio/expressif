@@ -13,7 +13,7 @@ const server = new E.Server(
 		"routers": [
 			{ "relpath": "routers" }
 		],
-		"socketfile": process.env.SOCKET,
+		"port": process.env.PORT,
 		"bodyparser": {
 			"limit": '10mb',
 			"extended": true

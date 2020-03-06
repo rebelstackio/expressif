@@ -3,6 +3,7 @@
 const RESPOND = global.E.Respond;
 
 function getHealthCheck ( req, res ) {
+	const path = req.path;
 	LOGGER.info(`GET request for ${req.originalUrl} endpoint requested `);
 	const data = {
 		uptime: process.uptime(),
