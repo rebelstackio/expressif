@@ -1,12 +1,12 @@
 /* routers/healthcheck/index.js */
 'use strict';
 
-const Router = require('@rebelstack-io/expressif').Router;
-const RX = require('@rebelstack-io/expressif').ReqValidator;
+const Router = global.E.RouterV2;
+const RX = global.E.ReqValidator;
 
 const cc = require('controllers/healthcheck');
 
-const HealthCheckRouter = function HealthCheckRouter (auth) {
+const HealthCheckRouter = function HealthCheckRouter () {
 	const routes = [
 		{
 			method: 'get',
@@ -16,9 +16,7 @@ const HealthCheckRouter = function HealthCheckRouter (auth) {
 			rxvalid:RX.NOT_ACCEPT_JSON,
 		}
 	];
-	const router = new Router({}, auth);
-	router.addRoutes(routes);
-	return router.router;
+	return Router(routes);
 }
 
 module.exports = HealthCheckRouter;

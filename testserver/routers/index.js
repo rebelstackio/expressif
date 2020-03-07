@@ -1,9 +1,8 @@
 /* routes/index.js */
 
 function registerRouters( app ) {
-	app.use( '/healthcheck',     require('./healthcheck')() );
-	// app.use( '/healthcheckv2',   require('./healthcheck/v2')(global.A) );
-
+	app.use( '/v1/healthcheck',     require('./healthcheck')() );
+	app.use( '/v2/healthcheck',   require('./healthcheck/v2')() );
 };
 
 module.exports = registerRouters;
