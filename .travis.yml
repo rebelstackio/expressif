@@ -4,11 +4,13 @@ language: node_js
 git:
   submodules: false
 node_js:
-- "9"
+- "10"
 before_install:
 - npm update -g npm
 install:
 - npm install
+script: npm test
+after_success: npm run coverage
 deploy:
   provider: npm
   email: "jegj57@gmail.com"

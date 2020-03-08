@@ -7,7 +7,7 @@
 		"start": "NODE_ENV=development NODE_PATH=. node index.js",
 		"test": "NODE_ENV=testing NODE_PATH=src jest test --watch",
 		"deploy": "npm publish --access=public",
-		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
+		"coverage": "NODE_ENV=testing NODE_PATH=src jest --coverage"
 	},
 	"repository": {
 		"type": "git",
