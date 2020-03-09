@@ -41,9 +41,9 @@ describe('lib/util/index.js', () => {
 		});
 
 		it('Should clean the most nested object possible', () => {
-			let test = [1, 2, 3, null, null, undefined, 0 ,false, { t: 1, f: undefined, a: null, c : [ 1, 2, 3, undefined, 5, null, { a: 1, b: 2, c: undefined, d :[null, null, undefined], a : {}}] }];
+			let test = [1, 2, 3, null, null, undefined, 0 ,false, { t: 1, f: undefined, a: null, c : [ 1, 2, 3, undefined, 5, null, { a: 1, b: 2, c: undefined, d :[null, null, undefined], a1 : {}}] }];
 			expect(removeNull(test)).toMatchObject(
-				[1, 2, 3, 0 ,false, { t: 1, c : [ 1, 2, 3, 5, { a: 1, b: 2,  d :[], a : {}}] }]
+				[1, 2, 3, 0 ,false, { t: 1, c : [ 1, 2, 3, 5, { a: 1, b: 2,  d :[], a1 : {}}] }]
 			);
 		});
 
