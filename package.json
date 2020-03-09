@@ -6,6 +6,7 @@
 	"scripts": {
 		"start": "NODE_ENV=development NODE_PATH=. node index.js",
 		"test": "NODE_ENV=testing NODE_PATH=src jest test --watch",
+		"lint": "eslint ./lib",
 		"deploy": "npm publish --access=public",
 		"coverage": "NODE_ENV=testing NODE_PATH=src jest --coverage"
 	},
