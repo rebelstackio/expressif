@@ -1,0 +1,19 @@
+{
+	"name": "testserver",
+	"version": "1.0.0",
+	"description": "Test server for testing expressif components",
+	"main": "index.js",
+	"scripts": {
+		"start": "NODE_PATH=. node index.js",
+		"debug": "NODE_PATH=. node --inspect-brk=0.0.0.0:9229 index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"expressif"
+	],
+	"author": "jegj57@gmail.com",
+	"license": "ISC",
+	"dependencies": {
+		"dotenv": "^8.2.0"
+	}
+}

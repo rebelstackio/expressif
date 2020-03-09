@@ -1,13 +1,15 @@
 {
 	"name": "@rebelstack-io/expressif",
-	"version": "3.4.0",
+	"version": "3.5.0",
 	"description": "Opinionated RESTful web service framework built on express",
 	"main": "index.js",
 	"scripts": {
-		"start": "NODE_PATH=. node index.js",
-		"test": "node_modules/.bin/mocha test",
+		"start": "NODE_ENV=development NODE_PATH=. node index.js",
+		"test": "NODE_ENV=testing NODE_PATH=src jest test --watch",
+		"testserver": "npm start --prefix ./testserver",
+		"lint": "eslint ./lib",
 		"deploy": "npm publish --access=public",
-		"coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test -R spec"
+		"coverage": "NODE_ENV=testing NODE_PATH=src jest --coverage"
 	},
 	"repository": {
 		"type": "git",
@@ -36,31 +38,27 @@
 	],
 	"license": "UNLICENSED",
 	"devDependencies": {
-		"chai": "^4.1.2",
-		"eslint": "^5.13.0",
-		"eslint-config-airbnb-base": "^13.1.0",
-		"eslint-config-standard": "^12.0.0",
-		"eslint-plugin-import": "^2.16.0",
-		"eslint-plugin-node": "^8.0.1",
-		"eslint-plugin-promise": "^4.0.1",
-		"eslint-plugin-standard": "^4.0.0",
-		"istanbul": "^1.0.0-alpha.2",
-		"mocha": "^5.0.0",
-		"proxyquire": "^2.1.0",
-		"sinon": "^7.2.3",
-		"sinon-chai": "^3.3.0"
+		"eslint": "^6.8.0",
+		"eslint-config-airbnb-base": "^14.0.0",
+		"eslint-config-standard": "^14.1.0",
+		"eslint-plugin-import": "^2.20.1",
+		"eslint-plugin-node": "^11.0.0",
+		"eslint-plugin-promise": "^4.2.1",
+		"eslint-plugin-standard": "^4.0.1",
+		"jest": "^25.1.0",
+		"jest-extended": "^0.11.5"
 	},
 	"dependencies": {
-		"ajv": "^6.10.2",
-		"ajv-errors": "^1.0.1",
-		"app-module-path": "^2.2.0",
-		"body-parser": "^1.18.3",
-		"compression": "^1.7.2",
-		"cors": "^2.8.5",
-		"express": "^4.16.2",
-		"express-rate-limit": "^3.4.0",
-		"jwt-simple": "^0.5.1",
-		"method-override": "^3.0.0",
-		"pg": "^7.8.0"
+		"ajv": "6.12.0",
+		"ajv-errors": "1.0.1",
+		"app-module-path": "2.2.0",
+		"body-parser": "1.19.0",
+		"compression": "1.7.4",
+		"cors": "2.8.5",
+		"express": "4.17.1",
+		"express-rate-limit": "5.1.1",
+		"jwt-simple": "0.5.6",
+		"method-override": "3.0.0",
+		"pg": "7.18.2"
 	}
 }
