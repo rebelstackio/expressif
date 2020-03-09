@@ -10,7 +10,7 @@ const server = new E.Server(
 		"port": process.env.PORT, 
 		"routers": [
 			{ "relpath": "routers" }
-		]s
+		]
 	}
 );
 server.start();
