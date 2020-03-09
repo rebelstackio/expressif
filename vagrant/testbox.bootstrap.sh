@@ -193,6 +193,14 @@ npm install
 apt install -y ruby ruby-dev
 gem install travis
 
+# Install wrk for benkmarch
+sudo apt-get install build-essential libssl-dev git -y
+git clone https://github.com/wg/wrk.git wrk
+cd wrk
+make
+# move the executable to somewhere in your PATH, ex:
+sudo cp wrk /usr/local/bin
+
 # Tag the provision time:
 date > "$PROVISIONED_ON"
 
