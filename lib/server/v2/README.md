@@ -14,7 +14,6 @@ const server = ServerV2(
 	{
 		"socketfile": "/var/run/myapp/myapp.socket",
 		"port": 8080, 
-		"LOGGER": clogger,
 		"routers": "custom_folder_for_routers"
 	}
 );
@@ -45,7 +44,6 @@ server.close();
 	"port": 80,
 	"routers": "routers",
 	"socketfile": null,
-	"LOGGER": null
 }
 ```
 
