@@ -18,6 +18,8 @@ const RouterV2 = require('./lib/router/v2');
 
 const Server = require('./lib/server');
 
+const ServerV2 = require('./lib/server/v2');
+
 const {	ExpError, ExpData, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/expobject');
 
 const { BasicLogger } = require('./lib/log');
@@ -34,6 +36,7 @@ module.exports = {
 	Router,
 	RouterV2,
 	Server,
+	ServerV2,
 	BasicLogger,
 	ExpError,
 	ExpData,
