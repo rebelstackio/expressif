@@ -7,21 +7,13 @@ global.LOGGER = console;
 // Set up Authorization by privileges
 global.A = new global.E.AuthByPrivs(process.env.JWT_SECRET);
 // Set up the server
-const server = new global.E.Server(
+const server = global.E.ServerV2(
 	{
-		'port': process.env.PORT,
-		'routers': [
-			{ 'relpath': 'routers' }
-		],
-		'bodyparser': {
-			'limit': '10mb',
-			'extended': true
-		}
+		'port': process.env.PORT
 	},
-	{
-		gLOGGER: global.LOGGER
-	}
 );
+
+// TODO: Test the configureapp with all the middlewares and custom packages
 
 // Unhandled exceptions
 process.on('uncaughtException', function (err) {
@@ -35,7 +27,7 @@ if (process.env.NODE_ENV !== 'testing') {
 		global.LOGGER.info('SIGINT signal received.');
 		try {
 			// Close server
-			server.close();
+			server.stop();
 			// Check db connection and close it
 			if (global.db) {
 				global.db.close();
