@@ -120,6 +120,52 @@ describe('TestSuit for ServerV2', () => {
 		expect(requireMock).toBeCalledWith('routers');
 	});
 
+	test('must throw a TypeError if the router options is not an array or string', () => {
+		const customOptions = {
+			strict: true,
+			limit: '300kb',
+			inflate: false,
+			routers: false
+		};
+		global.LOGGER = {
+			debug: jest.fn()
+		};
+
+		expect(() => {
+			ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock });
+		}).toThrow();
+	});
+
+	test('must call the logger warning method if there is a router that cannot be loaded when the routers options is an array', () => {
+		global.LOGGER = {
+			debug: jest.fn(),
+			warn: jest.fn()
+		};
+		const customOptions = {
+			strict: true,
+			limit: '300kb',
+			inflate: false,
+			routers: ['routers','router_with_errors', 'routers_v2']
+		};
+		requireMock = jest.fn().mockImplementation((path) => {
+			if ( path === 'router_with_errors'){
+				throw new Error('Invalid router');
+			} else {
+				return jest.fn();
+			}
+		});
+		const myserver = ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock });
+		myserver.configureapp((app) => {
+			app.disable('x-powered-by');
+			app.set('trust proxy', 'loopback');
+			app.use(cors({
+				preflightContinue: true
+			}));
+		});
+
+		expect(global.LOGGER.warn).toBeCalledTimes(1);
+	});
+
 	test('configureapp method must be a callback with a reference with app express object where it is possible to customize the express app by the client with any allowed property by express', () => {
 		const myserver = ServerFactory({},{ express: expressMock, console: consoleMock, req: requireMock });
 		myserver.configureapp((app) => {
@@ -170,7 +216,6 @@ describe('TestSuit for ServerV2', () => {
 	});
 
 	test('close method must call express server close method', () => {
-
 		const myserver = ServerFactory({ socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
