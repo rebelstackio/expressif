@@ -6,7 +6,7 @@ const RX = global.E.ReqValidator;
 
 const cc = require('controllers/healthcheck');
 
-const HealthCheckRouter = function HealthCheckRouter () {
+const HealthCheckRouter = function HealthCheckRouter ( dependecies = {} ) {
 	const routes = [
 		{
 			method: 'get',
@@ -16,7 +16,7 @@ const HealthCheckRouter = function HealthCheckRouter () {
 			rxvalid:RX.NOT_ACCEPT_JSON,
 		}
 	];
-	return Router(routes);
+	return Router(routes, dependecies);
 };
 
 module.exports = HealthCheckRouter;
