@@ -19,7 +19,7 @@ const HealthCheckRouter = function HealthCheckRouter () {
 	const router = new Router({});
 	router.addRoutes(routes);
 	return router.router;
-}
+};
 
 module.exports = HealthCheckRouter;
 

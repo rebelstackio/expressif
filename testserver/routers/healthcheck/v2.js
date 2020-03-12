@@ -17,7 +17,7 @@ const HealthCheckRouter = function HealthCheckRouter () {
 		}
 	];
 	return Router(routes);
-}
+};
 
 module.exports = HealthCheckRouter;
 
