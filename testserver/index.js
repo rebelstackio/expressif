@@ -1,6 +1,10 @@
 /* index.js */
 require('dotenv').config();
 
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const methodOR  = require('method-override');
+
 global.E = require('../index');
 // Set up logger based in the current environment
 global.LOGGER = console;
@@ -13,7 +17,23 @@ const server = global.E.ServerV2(
 	},
 );
 
-// TODO: Test the configureapp with all the middlewares and custom packages
+// Configure middlewares here:
+server.configureapp((app) => {
+	app.disable('x-powered-by');
+	app.use(cors({
+		// Allow to continue with options endpoints
+		preflightContinue: true
+	}));
+
+	// Pass bodyparser options ( allows huge json bodies  )
+	app.use(bodyParser.json({}));
+	// for parsing application/x-www-form-urlencoded
+	app.use(bodyParser.urlencoded({extended:true}));
+
+	app.enable('trust proxy');
+
+	app.use(methodOR('X-HTTP-Method-Override'));
+});
 
 // Unhandled exceptions
 process.on('uncaughtException', function (err) {
