@@ -14,7 +14,8 @@ const server = ServerV2(
 	{
 		"socketfile": "/var/run/myapp/myapp.socket",
 		"port": 8080, 
-		"routers": "custom_folder_for_routers"
+		"routers": "custom_folder_for_routers",
+		"schemas": "custom_folder_for_schemas"
 	}
 );
 // Enable midleware or custrom express properties here before start the serer
@@ -39,12 +40,20 @@ server.close();
 
 ## Server Available's Properties
 
+- `port` : HTTP Port. Default 80
+- `router` : Directory where the routers will be loaded. Default to `routers`
+- `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`
+- `schemas` : Directory where the schemas will be loaded. Default to `schemas`
+
+### Sample: 
+
 ```json
-{
-	"port": 80,
-	"routers": "routers",
-	"socketfile": null,
-}
+	{
+		"port": 80,
+		"routers": "routers",
+		"socketfile": null,
+		"schemas": "schemas"
+	}
 ```
 
 ## Server Methods
