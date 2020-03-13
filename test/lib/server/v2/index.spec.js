@@ -2,7 +2,6 @@
 'use strict';
 
 const ServerFactory = require('../../../../lib/server/v2');
-
 const DEFAULTS = require('../../../../lib/server/v2/defaults.json');
 
 let expressMock, cors, appmock, consoleMock, requireMock, fsMock, serverMock;
