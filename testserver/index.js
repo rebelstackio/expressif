@@ -13,7 +13,8 @@ global.A = new global.E.AuthByPrivs(process.env.JWT_SECRET);
 // Set up the server
 const server = global.E.ServerV2(
 	{
-		'port': process.env.PORT
+		'port': process.env.PORT,
+		'wdir': __dirname // This is really important
 	},
 );
 

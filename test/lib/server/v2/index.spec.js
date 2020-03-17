@@ -36,8 +36,14 @@ describe('TestSuit for ServerV2', () => {
 		expressMock = jest.fn().mockImplementation(() => appmock);
 	});
 
+	test('must throw a TypeError if the wdir is not provided in the server factory options', () => {
+		expect(() => {
+			ServerFactory({ socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
+		}).toThrow(TypeError);
+	});
+
 	test('must call express constructor to build the app', () => {
-		ServerFactory({},{ express: expressMock, console: consoleMock, req: requireMock });
+		ServerFactory({ wdir: __dirname },{ express: expressMock, console: consoleMock, req: requireMock });
 
 		expect(expressMock).toBeCalledTimes(1);
 	});
@@ -46,7 +52,8 @@ describe('TestSuit for ServerV2', () => {
 		const customOptions = {
 			strict: true,
 			limit: '300kb',
-			inflate: false
+			inflate: false,
+			wdir: __dirname
 		};
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock });
 
@@ -57,27 +64,29 @@ describe('TestSuit for ServerV2', () => {
 		const customOptions = {
 			strict: true,
 			limit: '300kb',
-			inflate: false
+			inflate: false,
+			wdir: __dirname
 		};
 		global.LOGGER = {
 			debug: jest.fn()
 		};
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock });
 
-		expect(global.LOGGER.debug).toBeCalledTimes(1);
+		expect(global.LOGGER.debug).toBeCalledTimes(2);
 	});
 
 	test('must load routers based on the default folder name for routers(routers dah!)', () => {
 		const customOptions = {
 			strict: true,
 			limit: '300kb',
-			inflate: false
+			inflate: false,
+			wdir: __dirname
 		};
 		global.LOGGER = {
 			debug: jest.fn()
 		};
 
-		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock });
+		ServerFactory(customOptions, { express: expressMock, console: consoleMock, req: requireMock });
 
 		expect(requireMock).toBeCalledTimes(1);
 	});
@@ -87,7 +96,8 @@ describe('TestSuit for ServerV2', () => {
 			strict: true,
 			limit: '300kb',
 			inflate: false,
-			routers: 'my_routers'
+			routers: 'my_routers',
+			wdir: __dirname
 		};
 		global.LOGGER = {
 			debug: jest.fn()
@@ -104,7 +114,8 @@ describe('TestSuit for ServerV2', () => {
 			strict: true,
 			limit: '300kb',
 			inflate: false,
-			routers: ['my_routers', 'default', 'main', 'routers']
+			routers: ['my_routers', 'default', 'main', 'routers'],
+			wdir: __dirname
 		};
 		global.LOGGER = {
 			debug: jest.fn()
@@ -124,7 +135,8 @@ describe('TestSuit for ServerV2', () => {
 			strict: true,
 			limit: '300kb',
 			inflate: false,
-			routers: false
+			routers: false,
+			wdir: __dirname
 		};
 		global.LOGGER = {
 			debug: jest.fn()
@@ -144,7 +156,8 @@ describe('TestSuit for ServerV2', () => {
 			strict: true,
 			limit: '300kb',
 			inflate: false,
-			routers: ['routers','router_with_errors', 'routers_v2']
+			routers: ['routers','router_with_errors', 'routers_v2'],
+			wdir: __dirname
 		};
 		requireMock = jest.fn().mockImplementation((path) => {
 			if ( path === 'router_with_errors'){
@@ -166,7 +179,7 @@ describe('TestSuit for ServerV2', () => {
 	});
 
 	test('configureapp method must be a callback with a reference with app express object where it is possible to customize the express app by the client with any allowed property by express', () => {
-		const myserver = ServerFactory({},{ express: expressMock, console: consoleMock, req: requireMock });
+		const myserver = ServerFactory({wdir: __dirname},{ express: expressMock, console: consoleMock, req: requireMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
 			app.set('trust proxy', 'loopback');
@@ -181,7 +194,7 @@ describe('TestSuit for ServerV2', () => {
 	});
 
 	test('start method must use the port property and call the listen method  with the port from the express app', () => {
-		const myserver = ServerFactory({ port: 8080 },{ express: expressMock, console: consoleMock, req: requireMock });
+		const myserver = ServerFactory({ port: 8080, wdir: __dirname },{ express: expressMock, console: consoleMock, req: requireMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
 			app.set('trust proxy', 'loopback');
@@ -199,7 +212,7 @@ describe('TestSuit for ServerV2', () => {
 	});
 
 	test('start method must use the socket file property and call the listen method  with the socket file from the express app', () => {
-		const myserver = ServerFactory({ socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
+		const myserver = ServerFactory({ wdir: __dirname, socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
 			app.set('trust proxy', 'loopback');
@@ -215,7 +228,7 @@ describe('TestSuit for ServerV2', () => {
 	});
 
 	test('close method must call express server close method', () => {
-		const myserver = ServerFactory({ socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
+		const myserver = ServerFactory({ wdir: __dirname, socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
 			app.set('trust proxy', 'loopback');
