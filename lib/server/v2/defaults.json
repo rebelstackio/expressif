@@ -2,5 +2,12 @@
 	"port": 80,
 	"routers": "routers",
 	"socketfile": null,
-	"schemas": "schemas"
+	"schemas": "schemas",
+	"schema_options": {
+		"allErrors": true,
+		"keepErrors": false
+	},
+	"router_options": {
+
+	}
 }
