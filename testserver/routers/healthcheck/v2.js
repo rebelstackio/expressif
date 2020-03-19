@@ -6,7 +6,7 @@ const RX = global.E.ReqValidator;
 
 const cc = require('controllers/healthcheck');
 
-const HealthCheckRouter = function HealthCheckRouter ( dependecies = {} ) {
+const HealthCheckRouter = function HealthCheckRouter ( defaultrouteroptions = {}, dependecies = {} ) {
 	const routes = [
 		{
 			method: 'get',
@@ -16,7 +16,8 @@ const HealthCheckRouter = function HealthCheckRouter ( dependecies = {} ) {
 			rxvalid:RX.NOT_ACCEPT_JSON,
 		}
 	];
-	return Router(routes, dependecies);
+	// Use the router options set at Server level. Could overwrite these valuen for a specific router
+	return Router(routes, defaultrouteroptions, dependecies);
 };
 
 module.exports = HealthCheckRouter;
