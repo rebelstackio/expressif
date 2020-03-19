@@ -1,0 +1,10 @@
+{
+	"LOG_LEVEL": "debug",
+	"ALLOWED_LEVELS" : [
+		"debug",
+		"info",
+		"warn",
+		"error",
+		"fatal"
+	]
+}

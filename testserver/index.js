@@ -5,9 +5,11 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const methodOR  = require('method-override');
 
+const Logger = require('./lib/logger');
+
 global.E = require('../index');
 // Set up logger based in the current environment
-global.LOGGER = console;
+global.LOGGER = Logger({ level: process.env.LOG_LEVEL });
 // Set up Authorization by privileges
 global.A = new global.E.AuthByPrivs(process.env.JWT_SECRET);
 // Set up the server
