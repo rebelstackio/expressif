@@ -42,8 +42,10 @@ server.close();
 
 - `port` : HTTP Port. Default 80
 - `router` : Directory where the routers will be loaded. Default to `routers`
+- `router_options`: Express Router Options. By default empty. For more information check [Express Router Options](https://expressjs.com/es/api.html#express.router)
 - `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`
 - `schemas` : Directory where the schemas will be loaded. Default to `schemas`
+- `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options)
 
 ### Sample: 
 
@@ -51,8 +53,15 @@ server.close();
 	{
 		"port": 80,
 		"routers": "routers",
+		"router_options": {
+
+		},
 		"socketfile": null,
-		"schemas": "schemas"
+		"schemas": "schemas",
+		"schemas_options": {
+			"allErrors": true,
+			"keepErrors": false
+		}
 	}
 ```
 
