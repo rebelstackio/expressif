@@ -6,6 +6,7 @@ const RX = global.E.ReqValidator;
 
 const cc = require('controllers/healthcheck');
 
+// FIXME: Make a wrapper to this functions an expose only the array section to make the life easier to the clients
 const HealthCheckRouter = function HealthCheckRouter ( defaultrouteroptions = {}, dependecies = {} ) {
 	const routes = [
 		{
