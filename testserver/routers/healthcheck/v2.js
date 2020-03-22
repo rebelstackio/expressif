@@ -16,7 +16,7 @@ const HealthCheckRouter = function HealthCheckRouter ( defaultrouteroptions = {}
 			rxvalid:RX.NOT_ACCEPT_JSON,
 		}
 	];
-	// Use the router options set at Server level. Could overwrite these valuen for a specific router
+	// Use the router options set at Server level. Could overwrite these value for a specific router
 	return Router(routes, defaultrouteroptions, dependecies);
 };
 

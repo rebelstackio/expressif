@@ -2,7 +2,7 @@
 
 /**
  * Main Router Sign
- * @param {object} app Express APp
+ * @param {object} app Express App
  * @param {object} routeroptions  Router Options set at Server Level. Can be overloaded
  * @param {object} dependecies Expressif dependecies
  */
