@@ -20,8 +20,8 @@ Set the type of auth validation. The possible values are: `public`, `simple`, `p
 
 - `public`: Keep the endpoint public to the world
 - `simple`: Validate just the request containe a JWT token in the Authorization headers
-- `privileges`: Validate just the request containe a JWT token in the Authorization headers and it contains the `rprivs` and `dprvis` properties in the payload
-- `roles`: Validate just the request containe a JWT token in the Authorization headers and it contains the `rroles` and `droles` properties in the payload
+- `privileges`: Validate just the request containe a JWT token in the Authorization headers and it contains the `privileges` property in the payload
+- `roles`: Validate just the request containe a JWT token in the Authorization headers and it contains the `roles` property in the payload
 
 ### validreq
 ### mwares
