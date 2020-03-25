@@ -12,8 +12,7 @@ const HealthCheckRouter = function HealthCheckRouter ( defaultrouteroptions = {}
 		{
 			method: 'get',
 			path: '/',
-			public: true,
-			rprivs: [1,3],
+			auth: { type: 'public' },
 			mwares: [cc.getHealthCheck],
 			rxvalid:RX.NOT_ACCEPT_JSON,
 		}
