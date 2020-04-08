@@ -82,5 +82,5 @@ const routes = [
 ];
 const expressRouterOptions = {};
 
-return Router(routes, expressRouterOptions );
+return  new Router(routes, expressRouterOptions );
 ```
