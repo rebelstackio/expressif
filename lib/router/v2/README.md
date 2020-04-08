@@ -42,6 +42,8 @@ __NOTE__ The last one should be your "controller" function or a function that re
 
 ## Router Sample
 
+Router File:
+
 ```javascript
 // routers/sample/index.js
 const Router = require('@rebelstack-io/expressif').Router;
@@ -80,7 +82,19 @@ const routes = [
 		validreq: 'schema4'
 	}
 ];
-const expressRouterOptions = {};
+const expressRouterOptions = {}; // Express router custom options
 
 return  new Router(routes, expressRouterOptions );
+```
+
+Router Definition File:
+
+```javascript
+// routers/index.js
+{
+	'/v1/users': 'users/v2',  // will require( routers/users/v2/index.js)
+	'/v1/healthcheck': 'healthcheck', // will require( routers/healthcheck/index.js)
+	'/v1/posts': 'posts' // will require( routers/posts/index.js)
+	....
+}
 ```
