@@ -32,8 +32,6 @@ Set common validation related with the request's headers. Common values:
 		
 -	`NOT_APP_JSON`: Content-Type Header must be: application/json
 		
--	`ALREADY_LOGGED_IN`: Current session already logged in
-
 __NOTE__ Will possible to define custom request validators. Check [Custom Request Validators]()
 
 TODO: Add support for custom Request Validators
