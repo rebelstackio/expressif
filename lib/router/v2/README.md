@@ -1,6 +1,6 @@
-# Expressif Router v2
+# Expressif BasicRouter
 
-A new Router definition was added: `RouterV2`. Improves Router building with support for auto documented endpoints.
+Improves Router building with support for auto documented endpoints.
 
 ## Availables Options
 
@@ -24,30 +24,43 @@ Set the type of auth validation. The possible values are: `public`, `simple`, `p
 - `roles`: Validate just the request containe a JWT token in the Authorization headers and it contains the `roles` property in the payload
 
 ### validreq
+Set common validation related with the request's headers. Common values:
+
+-	`NOT_ACCEPT_JSON`: Accept Header must be: application/json
+		
+-	`NOT_FORM_ENCODED`: Content-Type Header must be: application/x-www-form-urlencoded
+		
+-	`NOT_APP_JSON`: Content-Type Header must be: application/json
+		
+-	`ALREADY_LOGGED_IN`: Current session already logged in'
+
 ### mwares
+
+Custom function middlewares applied from left to right. 
+
+__NOTE__ The last one should be your "controller" function or a function that respnse back to the client.
+
+## Router Sample
 
 ```javascript
 // routers/sample/index.js
-const JSONValidator = require('@rebelstack-io/expressif').JSONValidator;
-const Router = require('@rebelstack-io/expressif').RouterV2;
-const RX = require('@rebelstack-io/expressif').ReqValidator;
+const Router = require('@rebelstack-io/expressif').Router;
 const cc = require('controllers/sample');
 
-let ajv = new JSONValidator([schemas], { allErrors: true, jsonPointers: true });
 const routes = [
 	{
 		method: 'get',
 		path: '/',
 		auth: { type: 'public' },
 		mwares: [cc.controlerfunc1],
-		rxvalid:RX.NOT_ACCEPT_JSON,
+		rxvalid: [ 'NOT_ACCEPT_JSON' ]
 	},
 	{
 		method: 'put',
 		path: '/:id',
 		auth: { type: 'privileges', rprivs: [1, 3, 5] },
-		mwares: [cc.controlerfunc2],
-		rxvalid:RX.NOT_ACCEPT_JSON,
+		mwares: [ cc.controlerfunc2],
+		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
 		validreq: 'schema2'
 	},
 	{
@@ -55,7 +68,7 @@ const routes = [
 		path: '/:id',
 		auth: { type: 'roles', rroles: ['user', 'admin'] },
 		mwares: [cc.controlerfunc3],
-		rxvalid:RX.NOT_ACCEPT_JSON,
+		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
 		validreq: 'schema3'
 	},
 	{
@@ -63,11 +76,11 @@ const routes = [
 		path: '/:id',
 		auth: { type: 'simple' },
 		mwares: [cc.controlerfunc4],
-		rxvalid:RX.NOT_ACCEPT_JSON,
+		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
 		validreq: 'schema4'
 	}
 ];
 const expressRouterOptions = {};
 
-return Router(routes, expressRouterOptions, auth, jsvalidator);
+return Router(routes, expressRouterOptions );
 ```
