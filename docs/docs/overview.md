@@ -5,10 +5,11 @@ permalink: /docs/overview/
 tabindex: 0
 ---
 
-# Wath is Docstrap?
+# Wath is Expressif?
 
-Docstrap is an open-source library providing tools that allow easy deployment for your documentation, All you have to do is write your documentaion in markdown notation as you're used to.
+[![Build Status](https://travis-ci.com/rebelstackio/expressif.svg?branch=develop)](https://travis-ci.com/rebelstackio/expressif)
 
-- CI/CD easy to hook Doctrap with Travis or Jenkins.
-- Easy to customize, is only old plain HTML and CSS.
-- Fast build, due to the simplicity of the library and well-ptimized code, you don't have to worry about long build process.
+expressif is an opinionated wrapper and bootstrap for the express framework(https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from [ayEs](https://github.com/rebelstackio/ayEs) but opines further for the sake of simplifying the construction of RESTful APIs.
+<br/>
+<br/>
+The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`.
