@@ -15,4 +15,4 @@ expressif is an opinionated wrapper and bootstrap for the express framework(http
 The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`.
 <br/><br/>
 
-![Service Request Flow]({% link /assets/img/ServiceRequestFlow.svg %})
+![Service Request Flow]({{ site.baseurl }}{% link /assets/img/ServiceRequestFlow.svg %})

@@ -10,7 +10,7 @@ title: Expressif Documentation
 email: osmarreyesst@gmai.com
 description: >- # this means to ignore newlines until "baseurl:"
   expressif is an opinionated wrapper and bootstrap for the express framework <a href="https://expressjs.com/en/guide/routing.html">Routing</a> that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from <a href="https://github.com/rebelstackio/ayEs">ayEs</a> but opines further for the sake of simplifying the construction of RESTful APIs.
-baseurl: "/" # the subpath of your site, e.g. /blog
+baseurl: "/expressif/" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username: oreyes1991
