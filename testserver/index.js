@@ -2,14 +2,17 @@
 require('dotenv').config();
 
 const cors = require('cors');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const methodOR  = require('method-override');
 
 const Logger = require('./lib/logger');
+const DB = require('../lib/db/pg');
 
 global.E = require('../index');
 // Set up logger based in the current environment
 global.LOGGER = Logger({ level: process.env.LOG_LEVEL });
+// Set up database
+global.DB = new DB();
 // Set up Authorization by privileges
 global.A = new global.E.AuthByPrivs(process.env.JWT_SECRET);
 // Set up the server
@@ -32,10 +35,10 @@ server.configureapp((app) => {
 		preflightContinue: true
 	}));
 
-	// Pass bodyparser options ( allows huge json bodies  )
-	app.use(bodyParser.json({}));
-	// for parsing application/x-www-form-urlencoded
-	app.use(bodyParser.urlencoded({extended:true}));
+	// // Pass bodyparser options ( allows huge json bodies  )
+	// app.use(bodyParser.json({}));
+	// // for parsing application/x-www-form-urlencoded
+	// app.use(bodyParser.urlencoded({extended:true}));
 
 	app.enable('trust proxy');
 

@@ -12,6 +12,8 @@ function registerRouters( app, routeroptions, dependecies = {} ) {
 	app.use( '/v1/healthcheck',   require('./healthcheck')(dependecies) );
 	// Router v2
 	app.use( '/v2/healthcheck',   require('./healthcheck/v2')(routeroptions, dependecies ) );
+	// Router Product
+	app.use( '/v1/products',   require('./products')(routeroptions, dependecies ) );
 }
 
 module.exports = registerRouters;

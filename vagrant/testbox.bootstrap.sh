@@ -143,7 +143,7 @@ EOF
 
 # add expressif user
 cat << EOF | su - postgres -c psql
-CREATE ROLE expressif WITH PASSWORD 'expressif_dev';
+CREATE ROLE expressif WITH LOGIN PASSWORD 'expressif_dev';
 EOF
 
 # Edit postgresql.conf to change listen address to '*':
@@ -159,6 +159,7 @@ fi
 
 # Append to pg_hba.conf to add password auth:
 echo "host    all             all             all                     md5" >> "$PG_HBA"
+
 
 
 # Restart PostgreSQL for good measure
@@ -181,6 +182,11 @@ EOF
 
 # Restart PostgreSQL for good measure
 service postgresql restart
+
+# Load dummy sql
+cat << EOF |
+	su - postgres --dbname=$PGDATABASE -c psql -p $PGPORT -f /home/vagrant/expressif/vagrant/db/migrations/01-bundle.sql
+EOF
 
 
 # install expressif
