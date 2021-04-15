@@ -52,7 +52,6 @@
 		"ajv": "6.12.0",
 		"ajv-errors": "1.0.1",
 		"app-module-path": "2.2.0",
-		"body-parser": "1.19.0",
 		"compression": "1.7.4",
 		"cors": "2.8.5",
 		"express": "4.17.1",

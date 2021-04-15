@@ -118,7 +118,6 @@ describe('TestSuit for ServerV2', () => {
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 
 		expect(requireMock).toBeCalledTimes(1);
-		expect(requireMock).toBeCalledWith('my_routers');
 	});
 
 	test('must load routers based on a custom array and require the router main files based on number of items', () => {
@@ -226,7 +225,7 @@ describe('TestSuit for ServerV2', () => {
 		expect(appmock.disable).toBeCalledWith('x-powered-by');
 	});
 
-	test('start method must use the port property and call the listen method  with the port from the express app', () => {
+	test('start method must use the port property and call the listen method  with the port from the express app and the default values', () => {
 		const myserver = ServerFactory({ port: 8080, wdir: __dirname },{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
@@ -239,8 +238,9 @@ describe('TestSuit for ServerV2', () => {
 
 		myserver.start();
 
-		expect(appmock.set).toBeCalledTimes(2);
+		expect(appmock.set).toBeCalledTimes(3);
 		expect(appmock.set).nthCalledWith(2, 'port', 8080);
+		expect(appmock.set).nthCalledWith(3, 'host', '0.0.0.0');
 		expect(appmock.listen).toBeCalledTimes(1);
 	});
 
