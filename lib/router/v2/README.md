@@ -11,7 +11,7 @@ The HTTP Verb, e.g `POST`, `PUT`...etc
 Router path. Could be `/` for the root path of the router and use the `:` character to set params in the URL that will become available in the controller
 ```json
 {
-	"path": "/users/:id" 
+	"path": "/users/:id"
 }
 ```
 
@@ -38,7 +38,7 @@ TODO: Add support for custom Request Validators
 
 ### mwares
 
-Custom function middlewares applied from left to right. 
+Custom function middlewares applied from left to right.
 
 __NOTE__ The last one should be your "controller" function or a function that respnse back to the client.
 
@@ -49,6 +49,7 @@ Router File:
 ```javascript
 // routers/sample/index.js
 const Router = require('@rebelstack-io/expressif').Router;
+const RX = require('@rebelstack-io/expressif').ReqValidator;
 const cc = require('controllers/sample');
 
 const routes = [
@@ -57,14 +58,14 @@ const routes = [
 		path: '/',
 		auth: { type: 'public' },
 		mwares: [cc.controlerfunc1],
-		rxvalid: [ 'NOT_ACCEPT_JSON' ]
+		rxvalid:  RX.NOT_ACCEPT_JSON
 	},
 	{
 		method: 'put',
 		path: '/:id',
 		auth: { type: 'privileges', rprivs: [1, 3, 5] },
 		mwares: [ cc.controlerfunc2],
-		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
+		rxvalid: RX.NOT_ACCEPT_JSON | RX.NOT_APPLICATION_JSON,
 		validreq: 'schema2'
 	},
 	{
@@ -72,7 +73,7 @@ const routes = [
 		path: '/:id',
 		auth: { type: 'roles', rroles: ['user', 'admin'] },
 		mwares: [cc.controlerfunc3],
-		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
+		rxvalid: RX.NOT_ACCEPT_JSON | RX.NOT_APPLICATION_JSON,
 		validreq: 'schema3'
 	},
 	{
@@ -80,7 +81,7 @@ const routes = [
 		path: '/:id',
 		auth: { type: 'simple' },
 		mwares: [cc.controlerfunc4],
-		rxvalid: [ 'NOT_ACCEPT_JSON', 'NOT_APPLICATION_JSON']
+		rxvalid: RX.NOT_ACCEPT_JSON | RX.NOT_APPLICATION_JSON,
 		validreq: 'schema4'
 	}
 ];
