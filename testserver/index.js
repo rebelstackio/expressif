@@ -28,7 +28,7 @@ const server = global.E.ServerV2(
 );
 
 // Configure middlewares here:
-server.configureapp((app) => {
+server.configureapp((app, express) => {
 	app.disable('x-powered-by');
 	app.use(cors({
 		// Allow to continue with options endpoints
@@ -36,9 +36,9 @@ server.configureapp((app) => {
 	}));
 
 	// // Pass bodyparser options ( allows huge json bodies  )
-	// app.use(bodyParser.json({}));
-	// // for parsing application/x-www-form-urlencoded
-	// app.use(bodyParser.urlencoded({extended:true}));
+	app.use(express.json({}));
+	// for parsing application/x-www-form-urlencoded
+	app.use(express.urlencoded({extended:true}));
 
 	app.enable('trust proxy');
 
