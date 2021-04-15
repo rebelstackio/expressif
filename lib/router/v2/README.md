@@ -27,11 +27,11 @@ Set the type of auth validation. The possible values are: `public`, `simple`, `p
 Set common validation related with the request's headers. Common values:
 
 -	`NOT_ACCEPT_JSON`: Accept Header must be: application/json
-		
+
 -	`NOT_FORM_ENCODED`: Content-Type Header must be: application/x-www-form-urlencoded
-		
+
 -	`NOT_APP_JSON`: Content-Type Header must be: application/json
-		
+
 __NOTE__ Will possible to define custom request validators. Check [Custom Request Validators]()
 
 TODO: Add support for custom Request Validators
