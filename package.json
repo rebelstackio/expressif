@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "NODE_ENV=development NODE_PATH=. node index.js",
-		"test": "NODE_ENV=testing NODE_PATH=src jest test --watch",
+		"test": "NODE_ENV=testing NODE_PATH=src jest test",
 		"testserver": "npm start --prefix ./testserver",
 		"lint": "eslint ./lib",
 		"deploy": "npm publish --access=public",
