@@ -6,9 +6,7 @@
 	"schemas": "schemas",
 	"schema_options": {
 		"allErrors": true,
-		"keepErrors": false,
-		"draft06": false,
-		"jsonPointers": true
+		"keepErrors": false
 	},
 	"router_options": {
 

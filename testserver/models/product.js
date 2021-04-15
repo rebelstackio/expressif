@@ -40,7 +40,7 @@ ProductModel.prototype.postProduct = function _postProduct(name, qty, price, nex
 	this.db.query( stmt, params, ( error, result ) => {
 		return next(
 			error,
-			result ? result['rows'][0][`post_product`] : null
+			result ? result['rows'] : null
 		);
 	});
 };

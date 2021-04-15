@@ -89,15 +89,3 @@ const expressRouterOptions = {}; // Express router custom options
 
 return  new Router(routes, expressRouterOptions );
 ```
-
-Router Definition File:
-
-```javascript
-// routers/index.js
-{
-	'/v1/users': 'users/v2',  // will require( routers/users/v2/index.js)
-	'/v1/healthcheck': 'healthcheck', // will require( routers/healthcheck/index.js)
-	'/v1/posts': 'posts' // will require( routers/posts/index.js)
-	....
-}
-```

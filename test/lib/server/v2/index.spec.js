@@ -25,6 +25,7 @@ describe('TestSuit for ServerV2', () => {
 			listen: jest.fn().mockImplementation(() => {
 				return serverMock;
 			}),
+			enable: jest.fn(),
 			get: jest.fn()
 		};
 		consoleMock = {
@@ -36,6 +37,8 @@ describe('TestSuit for ServerV2', () => {
 			unlinkSync: jest.fn()
 		};
 		expressMock = jest.fn().mockImplementation(() => appmock);
+		expressMock.json= jest.fn();
+		expressMock.urlencoded = jest.fn();
 		JSONValidatorMock = {
 			init: function _init(){
 				initMock();
@@ -220,7 +223,7 @@ describe('TestSuit for ServerV2', () => {
 				preflightContinue: true
 			}));
 		});
-		expect(appmock.use).toBeCalledTimes(1);
+		expect(appmock.use).toBeCalledTimes(3);
 		expect(appmock.set).toBeCalledWith('trust proxy', 'loopback');
 		expect(appmock.disable).toBeCalledWith('x-powered-by');
 	});
@@ -239,8 +242,8 @@ describe('TestSuit for ServerV2', () => {
 		myserver.start();
 
 		expect(appmock.set).toBeCalledTimes(3);
-		expect(appmock.set).nthCalledWith(2, 'port', 8080);
-		expect(appmock.set).nthCalledWith(3, 'host', '0.0.0.0');
+		expect(appmock.set).nthCalledWith(2, 'host', '0.0.0.0');
+		expect(appmock.set).nthCalledWith(3, 'port', 8080);
 		expect(appmock.listen).toBeCalledTimes(1);
 	});
 
