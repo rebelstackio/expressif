@@ -1,12 +1,10 @@
 /* index.js */
 
-const { Auth, AuthByPrivs, AuthByRoles } = require('./lib/auth');
+const { encodeJWT } = require('./lib/auth');
 
 const DB = require('./lib/db/pg');
 
 const Exception = require('./lib/exception');
-
-const JSONValidator = require('./lib/jsonvalidator');
 
 const ReqValidator = require('./lib/reqvalidator');
 
@@ -18,13 +16,12 @@ const Server = require('./lib/server/v2');
 
 const {	ExpError, ExpData, EXPRESSIF_HTTP_CODES, EXPRESSIF_HTTP_TYPES } = require('./lib/expobject');
 
+const Auth = { encodeJWT };
+
 module.exports = {
 	Auth,
-	AuthByPrivs,
-	AuthByRoles,
 	DB,
 	Exception,
-	JSONValidator,
 	Respond,
 	ReqValidator,
 	Router,

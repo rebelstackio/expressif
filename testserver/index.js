@@ -13,8 +13,6 @@ global.E = require('../index');
 global.LOGGER = Logger({ level: process.env.LOG_LEVEL });
 // Set up database
 global.DB = new DB();
-// Set up Authorization by privileges
-global.A = new global.E.AuthByPrivs(process.env.JWT_SECRET);
 // Set up the server
 const server = global.E.Server(
 	{
@@ -38,10 +36,12 @@ if (process.env.NODE_ENV !== 'testing') {
 	process.on('SIGINT', () => {
 		global.LOGGER.info('SIGINT signal received.');
 		try {
+			global.LOGGER.debug('Stopping server...');
 			// Close server
 			server.stop();
 			// Check db connection and close it
 			if (global.db) {
+				global.LOGGER.debug('Closing database connection...');
 				global.db.close();
 			}
 			process.exit(0);
