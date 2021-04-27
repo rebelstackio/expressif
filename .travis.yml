@@ -9,7 +9,7 @@ before_install:
 - npm update -g npm
 install:
 - npm install
-script: 'true'
+script: npm run test
 after_success: npm run coverage
 deploy:
   provider: npm
