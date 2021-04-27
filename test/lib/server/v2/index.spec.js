@@ -30,7 +30,8 @@ describe('TestSuit for ServerV2', () => {
 		};
 		consoleMock = {
 			log : jest.fn(),
-			debug: jest.fn()
+			debug: jest.fn(),
+			warn: jest.fn()
 		};
 		fsMock = {
 			existsSync: jest.fn(),
@@ -83,7 +84,8 @@ describe('TestSuit for ServerV2', () => {
 			wdir: __dirname
 		};
 		global.LOGGER = {
-			debug: jest.fn()
+			debug: jest.fn(),
+			warn: jest.fn()
 		};
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 
@@ -98,7 +100,8 @@ describe('TestSuit for ServerV2', () => {
 			wdir: __dirname
 		};
 		global.LOGGER = {
-			debug: jest.fn()
+			debug: jest.fn(),
+			warn: jest.fn()
 		};
 
 		ServerFactory(customOptions, { express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
@@ -115,7 +118,8 @@ describe('TestSuit for ServerV2', () => {
 			wdir: __dirname
 		};
 		global.LOGGER = {
-			debug: jest.fn()
+			debug: jest.fn(),
+			warn: jest.fn()
 		};
 
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
@@ -132,7 +136,8 @@ describe('TestSuit for ServerV2', () => {
 			wdir: __dirname
 		};
 		global.LOGGER = {
-			debug: jest.fn()
+			debug: jest.fn(),
+			warn: jest.fn()
 		};
 
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
@@ -156,10 +161,11 @@ describe('TestSuit for ServerV2', () => {
 			routers: ['routers','router_with_errors', 'routers_v2'],
 			wdir: __dirname
 		};
+		fsMock.existsSync = jest.fn().mockReturnValue(true);
 		requireMock = jest.fn().mockImplementation(() => {
 			return jest.fn();
 		});
-		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
+		ServerFactory(customOptions,{ fs: fsMock, express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 
 		expect(initMock).toBeCalledTimes(1);
 		expect(loadSchemasMock).toBeCalledTimes(1);
@@ -201,7 +207,8 @@ describe('TestSuit for ServerV2', () => {
 				return jest.fn();
 			}
 		});
-		const myserver = ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
+		fsMock.existsSync = jest.fn().mockReturnValue(false);
+		const myserver = ServerFactory(customOptions,{ fs:fsMock, express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 		myserver.configureapp((app) => {
 			app.disable('x-powered-by');
 			app.set('trust proxy', 'loopback');
@@ -210,7 +217,7 @@ describe('TestSuit for ServerV2', () => {
 			}));
 		});
 
-		expect(global.LOGGER.warn).toBeCalledTimes(1);
+		expect(global.LOGGER.warn).toBeCalledTimes(2);
 	});
 
 	test('configureapp method must be a callback with a reference with app express object where it is possible to customize the express app by the client with any allowed property by express', () => {
