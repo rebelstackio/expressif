@@ -1,0 +1,63 @@
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: Expressif Documentation
+email: osmarreyesst@gmai.com
+description: >- # this means to ignore newlines until "baseurl:"
+  expressif is an opinionated wrapper and bootstrap for the express framework <a href="https://expressjs.com/en/guide/routing.html">Routing</a> that vastly simplifies creating self-documenting RESTful web services. It borrows (overtly) heavily from <a href="https://github.com/rebelstackio/ayEs">ayEs</a> but opines further for the sake of simplifying the construction of RESTful APIs.
+baseurl: "/expressif/" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: jekyllrb
+github_username: oreyes1991
+benefits: >-
+  <div class="porperty">
+  <i class="fas fa-shield-alt"></i>
+  <h3>Secure</h3>
+  <p>
+   Authorization is handled using <a href="https://jwt.io/">JWT</a> and supports adding additional middleware to handle, for example, roles and/or permissions.
+  </p>
+  </div>
+  <div class="porperty">
+  <i class="fas fa-file-code"></i>
+  <h3>Self documenting endpoints</h3>
+  <p>
+  expressif can handle self-documented endpoints, will deliver a JSON file with each endpoint information
+  </p>
+  </div>
+links: >-
+  <a href="https://github.com/rebelstackio/docstrap">
+  <img src="assets/img/docstrap.svg" alt="docstrap logo">
+  </a>
+  <a href="https://rebelstackio.github.io/metaflux/">
+  <img src="assets/img/metaflux-logo-black.svg" alt="metaflux logo">
+  </a>
+name: Expressif
+repository: https://github.com/rebelstackio/expressif
+discord: https://discord.gg/rj4UUErTnj
+stackoverflow: \#linkto-so
+themecolor: orange
+clearlogo: assets/img/default-logo-white.png
+darklogo: assets/img/default-logo.png
+
+# Build settings
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
