@@ -1,5 +1,5 @@
 # expressif
-[![Build Status](https://travis-ci.com/rebelstackio/expressif.svg?branch=develop)](https://travis-ci.com/rebelstackio/expressif)
+[![Node.js CI](https://github.com/rebelstackio/expressif/actions/workflows/build.yml/badge.svg)](https://github.com/rebelstackio/expressif/actions/workflows/build.yml)
 
 expressif is an opinionated MCR wrapper and bootstrap for the [express framework](https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting JSON RESTful web services based on [JWT](https://jwt.io/) and [PostgresSQL](https://www.postgresql.org/).
 
