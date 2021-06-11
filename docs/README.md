@@ -5,3 +5,4 @@
 * [Expressif Router](./router.md)
 * [Expressif Controller](./controller.md)
 * [Expressif Model](./model.md)
+* [Expressif PgPool](./pgpool.md)
