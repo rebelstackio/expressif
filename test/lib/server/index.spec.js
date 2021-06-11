@@ -1,8 +1,8 @@
 /* test/lib/server/v2/index.spec.js */
 'use strict';
 
-const ServerFactory = require('../../../../lib/server/v2');
-const DEFAULTS = require('../../../../lib/server/v2/defaults.json');
+const ServerFactory = require('../../../lib/server');
+const DEFAULTS = require('../../../lib/server/defaults.json');
 
 let expressMock, cors, appmock, consoleMock, requireMock, fsMock, serverMock, JSONValidatorMock;
 
