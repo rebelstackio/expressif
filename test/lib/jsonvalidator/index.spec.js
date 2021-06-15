@@ -1,7 +1,7 @@
 /* test/lib/jsonvalidator/v2/index.spec.js */
 'use strict';
 
-const JsonValidator = require('../../../../lib/jsonvalidator/v2');
+const JsonValidator = require('../../../lib/jsonvalidator');
 
 let customErrorsMock, ajvmock, collectFilePathsRecursive,requireMock,addschemamock;
 
