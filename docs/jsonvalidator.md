@@ -11,11 +11,11 @@ Set in your Server creation the custom path for your schemas
 ```js
 global.E = require('@rebelstack-io/expressif');
 // Set up the server
-const server = global.E.ServerV2(
+const server = global.E.Server(
 	{
 		'port': process.env.PORT,
 		'schemas': 'my_schemas',
-		'wdir': __dirname 
+		'wdir': __dirname
 	},
 );
 ```
@@ -24,12 +24,12 @@ In this case the schemas will loaded from `${WDIR}/my_schemas`.
 
 ### Add support for draft06 schemas
 
-Expressif use [ajv]() package for JSON schemas. By default the current version supported on the schemas for `ajv` is draft-07. To set support for `draft-06` you must set the property in your server under the `schemas_options` property.
+Expressif use [ajv](https://www.npmjs.com/package/ajv) package for JSON schemas. By default the current version supported on the schemas for `ajv` is draft-07. To set support for `draft-06` you must set the property in your server under the `schemas_options` property.
 
 ```js
 global.E = require('@rebelstack-io/expressif');
 // Set up the server
-const server = global.E.ServerV2(
+const server = global.E.Server(
 	{
 		'port': process.env.PORT,
 		'wdir': __dirname,
@@ -93,6 +93,7 @@ const HealthCheckRouter = function HealthCheckRouter ( defaultrouteroptions = {}
 			method: 'get',
 			path: '/',
 			validreq: 'myschemaid'
+			rxvalid: RX.NOT_ACCEPT_JSON | RX.NOT_APPLICATION_JSON,
 			rprivs: [...],
 			mwares: [..., mycontroller],
 			....
