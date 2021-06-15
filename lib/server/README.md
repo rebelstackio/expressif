@@ -13,7 +13,7 @@ const compression = require('body-parser');
 const server = ServerV2(
 	{
 		"socketfile": "/var/run/myapp/myapp.socket",
-		"port": 8080, 
+		"port": 8080,
 		"routers": "custom_folder_for_routers",
 		"schemas": "custom_folder_for_schemas"
 	}
@@ -40,14 +40,15 @@ server.close();
 
 ## Server Available's Properties
 
-- `port` : HTTP Port. Default 80
-- `router` : Directory where the routers will be loaded. Default to `routers`
+- `host` : Host. Default to `0.0.0.0`.
+- `port` : HTTP Port. Default 80.
+- `router` : Directory where the routers will be loaded. Default to `routers`.
 - `router_options`: Express Router Options. By default empty. For more information check [Express Router Options](https://expressjs.com/es/api.html#express.router)
-- `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`
-- `schemas` : Directory where the schemas will be loaded. Default to `schemas`
-- `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options)
+- `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`.
+- `schemas` : Directory where the schemas will be loaded. Default to `schemas`.
+- `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options).
 
-### Sample: 
+### Sample:
 
 ```json
 	{
@@ -69,8 +70,8 @@ server.close();
 
 ### `start`
 
-Start the server based on the `port` or `socketfile`.
+Start the server based on the `host` and `port` or `socketfile`.
 
 ### `close`
 
-Stop the server
+Stop the server.

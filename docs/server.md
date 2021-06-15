@@ -1,15 +1,16 @@
-# Expressif Server
+# Expressif Server V2
+
 ## Basic Usage
 
 ```javascript
 // Expressif Server Lib
-const { Server } = require('expressif');
+const { ServerV2 } = require('expressif');
 // Additional middlewares i want in my server and i can configures as i want
 const compression = require('compression');
 const cors = require('cors');
 const compression = require('body-parser');
 // Set up the server
-const server = Server(
+const server = ServerV2(
 	{
 		"socketfile": "/var/run/myapp/myapp.socket",
 		"port": 8080,
@@ -39,14 +40,15 @@ server.close();
 
 ## Server Available's Properties
 
-- `port` : HTTP Port. Default 80
-- `router` : Directory where the routers will be loaded. Default to `routers`
+- `host` : Host. Default to `0.0.0.0`.
+- `port` : HTTP Port. Default 80.
+- `router` : Directory where the routers will be loaded. Default to `routers`.
 - `router_options`: Express Router Options. By default empty. For more information check [Express Router Options](https://expressjs.com/es/api.html#express.router)
-- `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`
-- `schemas` : Directory where the schemas will be loaded. Default to `schemas`
-- `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options)
+- `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`.
+- `schemas` : Directory where the schemas will be loaded. Default to `schemas`.
+- `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options).
 
-### Sample: 
+### Sample:
 
 ```json
 	{
@@ -68,11 +70,11 @@ server.close();
 
 ### `start`
 
-Start the server based on the `port` or `socketfile`.
+Start the server based on the `host` and `port` or `socketfile`.
 
 ### `close`
 
-Stop the server
+Stop the server.
 
 ## Links
 
