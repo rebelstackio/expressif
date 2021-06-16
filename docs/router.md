@@ -1,4 +1,4 @@
-# Expressif BasicRouter
+# Expressif Router
 
 Improves Router building with support for auto documented endpoints.
 
@@ -23,18 +23,13 @@ Set the type of auth validation. The possible values are: `public`, `simple`, `p
 - `privileges`: Validate just the request containe a JWT token in the Authorization headers and it contains the `privileges` property in the payload
 - `roles`: Validate just the request containe a JWT token in the Authorization headers and it contains the `roles` property in the payload
 
+### rxvalid
+
+Check [Expressif Request Validators](rxvalid.md)
+
 ### validreq
-Set common validation related with the request's headers. Common values:
 
--	`NOT_ACCEPT_JSON`: Accept Header must be: application/json
-
--	`NOT_FORM_ENCODED`: Content-Type Header must be: application/x-www-form-urlencoded
-
--	`NOT_APP_JSON`: Content-Type Header must be: application/json
-
-__NOTE__ Will possible to define custom request validators. Check [Custom Request Validators]()
-
-TODO: Add support for custom Request Validators
+Check [Expressif JSON Validators](jsonvalidator.md)
 
 ### mwares
 
