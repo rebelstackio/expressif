@@ -3,9 +3,9 @@
 
 expressif is an opinionated MCR wrapper and bootstrap for the [express framework](https://expressjs.com/en/guide/routing.html) that vastly simplifies creating self-documenting JSON RESTful web services based on [JWT](https://jwt.io/) and [PostgresSQL](https://www.postgresql.org/).
 
-The request flow goes through `authorize` -> `validate request structure` -> `validate request parameters` -> `controller middleware` -> `response`.
+The request flow goes through `authorize` -> `Request Validator` -> `JSON Validator` -> `Custom Middlewares` -> `Controller` -> `Model`.
 
-![Service Request Flow](docs/img/ServiceRequestFlow.svg)
+![Service Request Flow](docs/img/ExpressifFlow.png)
 
 ## Features
 
