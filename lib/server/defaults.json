@@ -4,6 +4,7 @@
 	"routers": "routers",
 	"socketfile": null,
 	"schemas": "schemas",
+	"trust_proxy": true,
 	"schema_options": {
 		"allErrors": true,
 		"keepErrors": false

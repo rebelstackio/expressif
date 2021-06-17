@@ -89,7 +89,7 @@ describe('TestSuit for ServerV2', () => {
 		};
 		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 
-		expect(global.LOGGER.debug).toBeCalledTimes(3);
+		expect(global.LOGGER.debug).toBeCalledTimes(4);
 	});
 
 	test('must load routers based on the default folder name for routers(routers dah!)', () => {

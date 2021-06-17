@@ -18,6 +18,7 @@ const server = ServerV2(
 		"port": 8080,
 		"routers": "custom_folder_for_routers",
 		"schemas": "custom_folder_for_schemas",
+		"trust_proxy": true,
 		"middlewares:" [
 			cors(),
 			helmet()
@@ -53,6 +54,7 @@ server.close();
 - `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`.
 - `schemas` : Directory where the schemas will be loaded. Default to `schemas`.
 - `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options).
+- `trust_proxy`: Use the same values as [here](https://expressjs.com/en/guide/behind-proxies.html). Default to `false`.
 - `middlewares`: Array of middlewares function apply at global level. Default to `[]`.
 
 ### Sample:
