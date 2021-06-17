@@ -3,6 +3,12 @@ require('dotenv').config();
 
 const cors = require('cors');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 5 // limit each IP to 100 requests per windowMs
+});
 
 const Logger = require('./lib/logger');
 const DB = require('../lib/db/pg');
@@ -21,9 +27,11 @@ const server = global.E.Server(
 		'schemas_options': {
 			'allErrors': true
 		},
+		'trust_proxy': false,
 		'middlewares': [
 			cors(),
-			helmet()
+			helmet(),
+			limiter,
 		]
 	},
 );
