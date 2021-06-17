@@ -1,4 +1,4 @@
-# Expressif Server V2
+# Expressif Server
 
 ## Basic Usage
 
@@ -12,7 +12,7 @@ const compression = require('compression');
 const cors = require('cors');
 const compression = require('body-parser');
 // Set up the server
-const server = ServerV2(
+const server = Server(
 	{
 		"socketfile": "/var/run/myapp/myapp.socket",
 		"port": 8080,
