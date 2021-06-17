@@ -1,9 +1,8 @@
 /* index.js */
 require('dotenv').config();
 
-// const cors = require('cors');
-// const bodyParser = require('body-parser');
-// const methodOR  = require('method-override');
+const cors = require('cors');
+const helmet = require('helmet');
 
 const Logger = require('./lib/logger');
 const DB = require('../lib/db/pg');
@@ -21,7 +20,11 @@ const server = global.E.Server(
 		'wdir': __dirname ,
 		'schemas_options': {
 			'allErrors': true
-		}
+		},
+		'middlewares': [
+			cors(),
+			helmet()
+		]
 	},
 );
 

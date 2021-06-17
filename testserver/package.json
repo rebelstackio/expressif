@@ -14,7 +14,9 @@
 	"author": "jegj57@gmail.com",
 	"license": "ISC",
 	"dependencies": {
+		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
+		"helmet": "^4.6.0",
 		"log4js": "6.1.2"
 	}
 }
