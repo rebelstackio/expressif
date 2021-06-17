@@ -3,8 +3,10 @@
 ## Basic Usage
 
 ```javascript
+const cors = require('cors');
+const helmet = require('helmet');
 // Expressif Server Lib
-const { ServerV2 } = require('expressif');
+const { Server} = require('expressif');
 // Additional middlewares i want in my server and i can configures as i want
 const compression = require('compression');
 const cors = require('cors');
@@ -15,7 +17,11 @@ const server = ServerV2(
 		"socketfile": "/var/run/myapp/myapp.socket",
 		"port": 8080,
 		"routers": "custom_folder_for_routers",
-		"schemas": "custom_folder_for_schemas"
+		"schemas": "custom_folder_for_schemas",
+		"middlewares:" [
+			cors(),
+			helmet()
+		]
 	}
 );
 // Enable midleware or custrom express properties here before start the serer
@@ -47,10 +53,11 @@ server.close();
 - `socketfile` : When it is a valid string for a socket file, the server will be started on the socket. Default `null`.
 - `schemas` : Directory where the schemas will be loaded. Default to `schemas`.
 - `schemas_options`: AJV Options. By default ```{ "allErrors": true, "keepErrors": false } ```. For more information check [ AJV Options](https://github.com/epoberezkin/ajv#options).
+- `middlewares`: Array of middlewares function apply at global level. Default to `[]`.
 
 ### Sample:
 
-```json
+```javascript
 	{
 		"port": 80,
 		"routers": "routers",
@@ -62,7 +69,11 @@ server.close();
 		"schemas_options": {
 			"allErrors": true,
 			"keepErrors": false
-		}
+		},
+		"middlewares:" [
+			cors(),
+			helmet()
+		]
 	}
 ```
 

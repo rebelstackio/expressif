@@ -10,5 +10,6 @@
 	},
 	"router_options": {
 
-	}
+	},
+	"middlewares": []
 }

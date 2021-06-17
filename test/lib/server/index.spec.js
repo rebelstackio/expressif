@@ -195,10 +195,14 @@ describe('TestSuit for ServerV2', () => {
 		};
 		const customOptions = {
 			strict: true,
-			limit: '300kb',
 			inflate: false,
 			routers: ['routers','router_with_errors', 'routers_v2'],
-			wdir: __dirname
+			wdir: __dirname,
+			middlewares: [
+				cors({
+					preflightContinue: true
+				})
+			]
 		};
 		requireMock = jest.fn().mockImplementation((path) => {
 			if ( path === 'router_with_errors'){
@@ -208,62 +212,45 @@ describe('TestSuit for ServerV2', () => {
 			}
 		});
 		fsMock.existsSync = jest.fn().mockReturnValue(false);
-		const myserver = ServerFactory(customOptions,{ fs:fsMock, express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
-		myserver.configureapp((app) => {
-			app.disable('x-powered-by');
-			app.set('trust proxy', 'loopback');
-			app.use(cors({
-				preflightContinue: true
-			}));
-		});
+
+		ServerFactory(customOptions,{ fs:fsMock, express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
 
 		expect(global.LOGGER.warn).toBeCalledTimes(2);
 	});
 
 	test('configureapp method must be a callback with a reference with app express object where it is possible to customize the express app by the client with any allowed property by express', () => {
-		const myserver = ServerFactory({wdir: __dirname},{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
-		myserver.configureapp((app) => {
-			app.disable('x-powered-by');
-			app.set('trust proxy', 'loopback');
-			app.use(cors({
-				// Allow to continue with options endpoints
-				preflightContinue: true
-			}));
-		});
-		expect(appmock.use).toBeCalledTimes(3);
-		expect(appmock.set).toBeCalledWith('trust proxy', 'loopback');
-		expect(appmock.disable).toBeCalledWith('x-powered-by');
+		const customOptions = {
+			strict: true,
+			inflate: false,
+			routers: ['routers','router_with_errors', 'routers_v2'],
+			wdir: __dirname,
+			middlewares: [
+				cors({
+					preflightContinue: true
+				})
+			]
+		};
+
+		ServerFactory(customOptions,{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
+
+		expect(appmock.use).toBeCalledWith(cors({
+			preflightContinue: true
+		}));
 	});
 
 	test('start method must use the port property and call the listen method  with the port from the express app and the default values', () => {
 		const myserver = ServerFactory({ port: 8080, wdir: __dirname },{ express: expressMock, console: consoleMock, req: requireMock, JSONValidator: JSONValidatorMock });
-		myserver.configureapp((app) => {
-			app.disable('x-powered-by');
-			app.set('trust proxy', 'loopback');
-			app.use(cors({
-				// Allow to continue with options endpoints
-				preflightContinue: true
-			}));
-		});
 
 		myserver.start();
 
-		expect(appmock.set).toBeCalledTimes(3);
-		expect(appmock.set).nthCalledWith(2, 'host', '0.0.0.0');
-		expect(appmock.set).nthCalledWith(3, 'port', 8080);
+		expect(appmock.set).toBeCalledTimes(2);
+		expect(appmock.set).nthCalledWith(1, 'host', '0.0.0.0');
+		expect(appmock.set).nthCalledWith(2, 'port', 8080);
 		expect(appmock.listen).toBeCalledTimes(1);
 	});
 
 	test('start method must use the socket file property and call the listen method  with the socket file from the express app', () => {
 		const myserver = ServerFactory({ wdir: __dirname, socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock, JSONValidator: JSONValidatorMock });
-		myserver.configureapp((app) => {
-			app.disable('x-powered-by');
-			app.set('trust proxy', 'loopback');
-			app.use(cors({
-				// Allow to continue with options endpoints
-				preflightContinue: true
-			}));
-		});
 
 		myserver.start();
 
@@ -272,16 +259,8 @@ describe('TestSuit for ServerV2', () => {
 
 	test('close method must call express server close method', () => {
 		const myserver = ServerFactory({ wdir: __dirname, socketfile: '/var/run/server.socket' },{ express: expressMock, console: consoleMock, req: requireMock, fs: fsMock, JSONValidator: JSONValidatorMock });
-		myserver.configureapp((app) => {
-			app.disable('x-powered-by');
-			app.set('trust proxy', 'loopback');
-			app.use(cors({
-				// Allow to continue with options endpoints
-				preflightContinue: true
-			}));
-		});
-		myserver.start();
 
+		myserver.start();
 		myserver.stop();
 
 		expect(serverMock.close).toBeCalledTimes(1);
