@@ -51,9 +51,9 @@ if (process.env.NODE_ENV !== 'testing') {
 			// Close server
 			server.stop();
 			// Check db connection and close it
-			if (global.db) {
+			if (global.DB) {
 				global.LOGGER.debug('Closing database connection...');
-				global.db.close();
+				global.DB.close();
 			}
 			process.exit(0);
 		} catch (error) {
